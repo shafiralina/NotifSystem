@@ -15,5 +15,6 @@ public class ControllerNotif {
 	private RepositoryNotif repositoryNotif;
 	
 	private ServiceNotif serviceNotif;
+	private String apagitu;
 	
 }
