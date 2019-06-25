@@ -5,9 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.siemo.notif.system.message.BaseResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
 import com.siemo.notif.system.message.SaveRequest;
+import com.siemo.notif.system.message.SendGroupRequest;
+import com.siemo.notif.system.message.SendRequest;
 import com.siemo.notif.system.model.MasterData;
 import com.siemo.notif.system.repository.RepositoryNotif;
 import com.siemo.notif.system.service.ServiceNotif;
@@ -20,26 +23,47 @@ public class ServiceNotifImpl implements ServiceNotif {
 	private RepositoryNotif repositoryNotif;
 	
 	@Override
-	public String saveData(SaveRequest request) {
+	public BaseResponse saveData(SaveRequest request) {
 		MasterData masterData = new MasterData(request.getUserId(), request.getTokenDevice(), request.getChannel(), request.getSystemOperasi());
 		masterData = repositoryNotif.save(masterData);	
-		return "ok";
+		BaseResponse response = new BaseResponse();
+		response.setMessage("simpan");
+		response.setStatus("berhasil");
+		return  response;
 	}
 
 	@Override
 	public GetAllDataResponse getAllData() {
-		GetAllDataResponse getAllData = new GetAllDataResponse();
+		GetAllDataResponse response = new GetAllDataResponse();
 		List<MasterData> listData = (List<MasterData>) repositoryNotif.findAll();
-		getAllData.setListData(listData);
-		return getAllData;
+		response.setListData(listData);
+		return response;
 	}
 
 	@Override
 	public GetAllDataResponse getData(GetDataRequest request) {
-		GetAllDataResponse getData = new GetAllDataResponse();
+		GetAllDataResponse response = new GetAllDataResponse();
 		List<MasterData> listData = repositoryNotif.findByUserId(request.getUserId());
-		getData.setListData(listData);
-		return getData;
+		response.setListData(listData);
+		return response;
+	}
+
+	@Override
+	public BaseResponse sendOne(SendRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BaseResponse sendGroup(SendGroupRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BaseResponse sendAll() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

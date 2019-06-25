@@ -22,11 +22,6 @@ public class SaveRequest {
 		this.systemOperasi = systemOperasi;
 	}
 
-	public SaveRequest(String userId, String tokenDevice){
-		this.userId=userId;
-		this.tokenDevice=tokenDevice;
-	}
-
 	public String getUserId() {
 		return userId;
 	}
