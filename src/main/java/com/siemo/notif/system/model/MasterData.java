@@ -5,50 +5,55 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "master_data")
 public class MasterData {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private String id;
 	
 	@Column
-	@NotNull
 	private String userId;
 	
 	@Column
-	@NotNull
 	private String tokenDevice;
 	
 	@Column
-	@NotNull
 	private String createdBy;
 	
 	@Column
-	@NotNull
 	private Date createdDated;
 	
 	@Column
-	@NotNull
 	private String updateBy;
 	
 	@Column
-	@NotNull
 	private Date updateDated;
 	
 	@Column
-	@NotNull
 	private String channel;
 	
 	@Column
-	@NotNull
 	private String systemOperasi;
+	
+	public MasterData() {
+		
+	}
+	
+	public MasterData(String userId, String tokenDevice, String channel, String systemOperasi) {
+		this.userId = userId;
+		this.tokenDevice = tokenDevice;
+		this.channel = channel;
+		this.systemOperasi = systemOperasi;
+	}
 
+	@Id
+	@GenericGenerator(strategy = "uuid", name = "system-uuid")
+	@GeneratedValue(generator = "system-uuid")
 	public String getId() {
 		return id;
 	}

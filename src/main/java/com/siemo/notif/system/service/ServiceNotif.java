@@ -1,16 +1,13 @@
 package com.siemo.notif.system.service;
 
-import com.siemo.notif.system.message.SendReq;
+
+import com.siemo.notif.system.message.GetAllDataResponse;
+import com.siemo.notif.system.message.GetDataRequest;
+import com.siemo.notif.system.message.SaveRequest;
 
 public interface ServiceNotif {
-	public String oneSave(SendReq request);
-	public String oneUpdate(SendReq request);
-	public String oneCreate(SendReq request);
-	public String allSave(SendReq request);
-	public String allUpdate(SendReq request);
-	public String allCreate(SendReq request);
-	public String groupSave(SendReq request);
-	public String groupUpdate(SendReq request);
-	public String groupCreate(SendReq request);
+	public String saveData(SaveRequest request);
+	public GetAllDataResponse getAllData();
+	public GetAllDataResponse getData(GetDataRequest request);
 
 }
