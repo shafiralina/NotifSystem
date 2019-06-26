@@ -6,30 +6,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.siemo.notif.system.message.BaseResponse;
+import com.siemo.notif.system.message.DataPegawaiRequest;
+import com.siemo.notif.system.message.DataPegawaiResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
 import com.siemo.notif.system.message.SaveRequest;
 import com.siemo.notif.system.message.SendGroupRequest;
 import com.siemo.notif.system.message.SendRequest;
+import com.siemo.notif.system.model.DataPegawai;
 import com.siemo.notif.system.model.MasterData;
+import com.siemo.notif.system.repository.RepositoryDataPegawai;
 import com.siemo.notif.system.repository.RepositoryNotif;
 import com.siemo.notif.system.service.ServiceNotif;
 
-
-@Service
+@Service("ServiceNotif")
 public class ServiceNotifImpl implements ServiceNotif {
 
 	@Autowired
 	private RepositoryNotif repositoryNotif;
-	
+
+	@Autowired
+	private RepositoryDataPegawai repositoryData;
+
 	@Override
 	public BaseResponse saveData(SaveRequest request) {
-		MasterData masterData = new MasterData(request.getUserId(), request.getTokenDevice(), request.getChannel(), request.getSystemOperasi());
-		masterData = repositoryNotif.save(masterData);	
+		MasterData masterData = new MasterData(request.getUserId(), request.getTokenDevice(), request.getChannel(),
+				request.getSystemOperasi());
+		masterData = repositoryNotif.save(masterData);
 		BaseResponse response = new BaseResponse();
 		response.setMessage("simpan");
 		response.setStatus("berhasil");
-		return  response;
+		return response;
 	}
 
 	@Override
@@ -66,5 +73,16 @@ public class ServiceNotifImpl implements ServiceNotif {
 		return null;
 	}
 
+	@Override
+	public Object data(DataPegawaiRequest dataPegawaiRequest) {
+		DataPegawai dataPegawai = new DataPegawai(dataPegawaiRequest.getKendaraan(), dataPegawaiRequest.getName(),
+				dataPegawaiRequest.getEmail());
+	dataPegawai = repositoryData.save(dataPegawai);	
+		DataPegawaiResponse response = new DataPegawaiResponse();
+		response.setMessage("Kendaraan " + dataPegawaiRequest.getKendaraan() + " milik " + dataPegawaiRequest.getName()
+				+ " telah dikirim notifikasinya ke email " + dataPegawaiRequest.getEmail());
+		response.setStatus("Berhasil");
+		return response;
+	}
 
 }
