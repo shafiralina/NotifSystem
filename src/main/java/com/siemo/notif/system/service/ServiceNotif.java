@@ -12,7 +12,6 @@ import com.siemo.notif.system.message.SendRequest;
 
 public interface ServiceNotif {
 	public Object saveData(SaveRequest request) throws IOException;
-	
 	public GetAllDataResponse getAllData();
 	public GetAllDataResponse getData(GetDataRequest request);
 	public BaseResponse sendOne(SendRequest request);

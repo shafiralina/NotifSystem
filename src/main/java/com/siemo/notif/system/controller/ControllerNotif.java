@@ -39,7 +39,7 @@ public class ControllerNotif {
 //		return response;
 //	}
 
-	@RequestMapping(value = { "/save/device" }, method = RequestMethod.POST, consumes = {
+	@RequestMapping(value = { "/save/data" }, method = RequestMethod.POST, consumes = {
 			MediaType.ALL_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public BaseResponse saveData(HttpServletRequest request, @RequestBody @Valid SaveRequest objectRequest)
@@ -68,6 +68,23 @@ public class ControllerNotif {
 		GetAllDataResponse response = serviceNotif.getData(request);
 		return response;
 	}
+	
+//	@RequestMapping(value = { "/get/data" }, method = RequestMethod.GET, consumes = {
+//			MediaType.ALL_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
+//	@ResponseBody
+//	public GetAllDataResponse getData(HttpServletRequest request, @RequestBody @Valid GetDataRequest objectRequest)
+//			throws IllegalAccessException, InvocationTargetException, IOException {
+//
+//		ObjectMapper mapper = new ObjectMapper();
+//		// Object to JSON in String
+//		String jsonInString = mapper.writeValueAsString(objectRequest);
+//
+//		Object responses = serviceNotif.getData(objectRequest);
+//		GetAllDataResponse response = new GetAllDataResponse();
+//		BeanUtils.copyProperties(responses, response);
+//
+//		return response;
+//	}
 
 	@PostMapping("send/one/customer")
 	public BaseResponse sendOne(@RequestBody SendRequest request) {

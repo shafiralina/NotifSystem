@@ -1,13 +1,18 @@
 package com.siemo.notif.system.service.impl;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.siemo.notif.system.message.BaseResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
@@ -22,10 +27,16 @@ import com.siemo.notif.system.util.service.BackendService;
 @Service("ServiceNotif")
 public class ServiceNotifImpl implements ServiceNotif {
 
+//	@Value("#{restprop['notif.url']}")
+//	private String url;
+//
+//	@Value("#{restprop['notif.uri']}")
+//	private String uri;
+
 	@Autowired
 	private RepositoryNotif repositoryNotif;
 	
-	
+	@Autowired
 	private BackendService backendService;
 
 	@Override
@@ -39,15 +50,13 @@ public class ServiceNotifImpl implements ServiceNotif {
 //		return response;
 
 		String url = "http://localhost:8002";
-		String uri = "/response/magang/";
+		String uri = "/response/savedata";
 		PostMethod post = new PostMethod(url + uri);
 		// panggil object
 		HttpClient client = new HttpClient();
-		Object messageSend = backendService.executeCallSilotFeedback(client, post, request);
+		Object messageSend = backendService.executeCallSilotFeedbackSave(client, post, request);
 		return messageSend;
 	}
-
-	
 
 	@Override
 	public GetAllDataResponse getAllData() {
@@ -82,5 +91,48 @@ public class ServiceNotifImpl implements ServiceNotif {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+//	private Object executeCallSilotFeedbackSave(HttpClient client, PostMethod post, SaveRequest request)
+//			throws IOException {
+//		String response = null;
+//		ObjectMapper mapper = new ObjectMapper();
+//
+//		// TODO: Make String Json to pretty
+//		String jsonRequest = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(request);
+//
+//		System.out.println("==================== REQUEST FEEDBACK ====================");
+//		System.out.println(jsonRequest);
+//		System.out.println("==========================================================");
+//
+//		StringRequestEntity entity = new StringRequestEntity(jsonRequest, "application/json", null);
+//		post.setRequestEntity(entity);
+//		BaseResponse modelResponse = new BaseResponse();
+//
+//		try {
+//			client.executeMethod(post);
+//			int statusCodeResponse = post.getStatusCode();
+//			// JIKA HTTP 200
+//			if (statusCodeResponse == HttpStatus.OK.value()) {
+//				BaseResponse modelResponseSuccess = new BaseResponse();
+//
+//				response = post.getResponseBodyAsString();
+//				modelResponseSuccess = mapper.readValue(response, BaseResponse.class);
+//
+//				return modelResponseSuccess;
+//
+//			} else {
+//				// TODO SET ERROR HTTP
+//				return null;
+//			}
+//
+//		} catch (SocketTimeoutException e) {
+//			e.printStackTrace();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//
+//		}
+//		return modelResponse;
+//
+//	}
 
 }

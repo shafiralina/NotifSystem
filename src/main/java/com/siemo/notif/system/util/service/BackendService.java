@@ -4,16 +4,23 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.siemo.notif.system.message.BaseResponse;
+import com.siemo.notif.system.message.GetAllDataResponse;
+import com.siemo.notif.system.message.GetDataRequest;
 import com.siemo.notif.system.message.SaveRequest;
 
+@Service
 public class BackendService {
-	public Object executeCallSilotFeedback(HttpClient client, PostMethod post, SaveRequest request)
+	public Object executeCallSilotFeedbackSave(HttpClient client, PostMethod post, SaveRequest request)
 			throws IOException {
 		String response = null;
 		ObjectMapper mapper = new ObjectMapper();
@@ -55,4 +62,5 @@ public class BackendService {
 		return modelResponse;
 
 	}
+	
 }
