@@ -9,7 +9,6 @@ import javax.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.siemo.notif.system.message.BaseResponse;
-import com.siemo.notif.system.message.DataPegawaiRequest;
-import com.siemo.notif.system.message.DataPegawaiResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
 import com.siemo.notif.system.message.SaveRequest;
@@ -36,10 +33,28 @@ public class ControllerNotif {
 	@Autowired
 	private ServiceNotif serviceNotif;
 
-	@PostMapping("/save/device")
-	public BaseResponse saveData(@RequestBody SaveRequest request) {
-		BaseResponse response = serviceNotif.saveData(request);
+//	@PostMapping("/save/device")
+//	public BaseResponse saveData(@RequestBody SaveRequest request) {
+//		BaseResponse response = serviceNotif.saveData(request);
+//		return response;
+//	}
+
+	@RequestMapping(value = { "/save/device" }, method = RequestMethod.POST, consumes = {
+			MediaType.ALL_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public BaseResponse saveData(HttpServletRequest request, @RequestBody @Valid SaveRequest objectRequest)
+			throws IllegalAccessException, InvocationTargetException, IOException {
+
+		ObjectMapper mapper = new ObjectMapper();
+		// Object to JSON in String
+		String jsonInString = mapper.writeValueAsString(objectRequest);
+
+		Object responses = serviceNotif.saveData(objectRequest);
+		BaseResponse response = new BaseResponse();
+		BeanUtils.copyProperties(responses, response);
+
 		return response;
+
 	}
 
 	@GetMapping("get/all/data")
@@ -72,31 +87,4 @@ public class ControllerNotif {
 		return response;
 	}
 
-//	@PostMapping("response/magang")
-//	@ResponseBody
-//	public DataPegawaiResponse data(@RequestBody DataPegawaiRequest request) {
-//		DataPegawaiResponse response = serviceNotif.data(request);
-//		return response;
-//	}
-
-	@RequestMapping(value = { "/response/magang" }, method = RequestMethod.POST, consumes = {
-			MediaType.ALL_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public DataPegawaiResponse simpanData(HttpServletRequest request,
-			@RequestBody @Valid DataPegawaiRequest objectRequest)
-			throws IllegalAccessException, InvocationTargetException, IOException {
-
-		ObjectMapper mapper = new ObjectMapper();
-		// Object to JSON in String
-		String jsonInString = mapper.writeValueAsString(objectRequest);
-
-//		log.debug("object Req :" + jsonInString);
-
-		Object responses = serviceNotif.data(objectRequest);
-		DataPegawaiResponse response = new DataPegawaiResponse();
-		BeanUtils.copyProperties(responses, response);
-//		log.debug("object Resp :" + response);
-
-		return response;
-	}
 }
