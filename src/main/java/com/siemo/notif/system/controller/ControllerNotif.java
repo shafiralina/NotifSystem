@@ -52,8 +52,10 @@ public class ControllerNotif {
 	}
 
 	@GetMapping("/send/one")
-	public String sendOne(HttpServletRequest request) {
-		String response = serviceNotif.sendOne("Berhasil");
+	public BaseResponse sendOne(HttpServletRequest request) {
+		BaseResponse response = new BaseResponse ();
+		response.setStatus("ok");
+		response.setMessage(serviceNotif.sendOne("Berhasil"));
 		return response;
 	}
 

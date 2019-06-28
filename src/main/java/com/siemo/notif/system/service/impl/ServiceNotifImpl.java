@@ -29,6 +29,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 //	private String uri;
 
 	@Autowired
+
 	private RepositoryNotif repositoryNotif;
 
 	@Autowired
