@@ -44,6 +44,10 @@ public class MasterData {
 		
 	}
 	
+	public MasterData(String userId) {
+		this.userId = userId;
+	}
+	
 	public MasterData(String userId, String tokenDevice, String channel, String systemOperasi) {
 		this.userId = userId;
 		this.tokenDevice = tokenDevice;

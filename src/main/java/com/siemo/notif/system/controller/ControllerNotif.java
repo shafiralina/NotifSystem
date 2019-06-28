@@ -22,39 +22,21 @@ import com.siemo.notif.system.message.BaseResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
 import com.siemo.notif.system.message.SaveRequest;
+import com.siemo.notif.system.message.SendAllRequest;
 import com.siemo.notif.system.message.SendGroupRequest;
-import com.siemo.notif.system.message.SendRequest;
 import com.siemo.notif.system.service.ServiceNotif;
 
 @RestController
-//@RequestMapping(value = "/api/notifsystem")
+@RequestMapping(value = "/api/notifsystem")
 public class ControllerNotif {
 
 	@Autowired
 	private ServiceNotif serviceNotif;
 
-//	@PostMapping("/save/device")
-//	public BaseResponse saveData(@RequestBody SaveRequest request) {
-//		BaseResponse response = serviceNotif.saveData(request);
-//		return response;
-//	}
-
-	@RequestMapping(value = { "/save/data" }, method = RequestMethod.POST, consumes = {
-			MediaType.ALL_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public BaseResponse saveData(HttpServletRequest request, @RequestBody @Valid SaveRequest objectRequest)
-			throws IllegalAccessException, InvocationTargetException, IOException {
-
-		ObjectMapper mapper = new ObjectMapper();
-		// Object to JSON in String
-		String jsonInString = mapper.writeValueAsString(objectRequest);
-
-		Object responses = serviceNotif.saveData(objectRequest);
-		BaseResponse response = new BaseResponse();
-		BeanUtils.copyProperties(responses, response);
-
+	@PostMapping("/save/data")
+	public BaseResponse saveData(@RequestBody SaveRequest request) {
+		BaseResponse response = serviceNotif.saveData(request);
 		return response;
-
 	}
 
 	@GetMapping("get/all/data")
@@ -68,27 +50,10 @@ public class ControllerNotif {
 		GetAllDataResponse response = serviceNotif.getData(request);
 		return response;
 	}
-	
-//	@RequestMapping(value = { "/get/data" }, method = RequestMethod.GET, consumes = {
-//			MediaType.ALL_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseBody
-//	public GetAllDataResponse getData(HttpServletRequest request, @RequestBody @Valid GetDataRequest objectRequest)
-//			throws IllegalAccessException, InvocationTargetException, IOException {
-//
-//		ObjectMapper mapper = new ObjectMapper();
-//		// Object to JSON in String
-//		String jsonInString = mapper.writeValueAsString(objectRequest);
-//
-//		Object responses = serviceNotif.getData(objectRequest);
-//		GetAllDataResponse response = new GetAllDataResponse();
-//		BeanUtils.copyProperties(responses, response);
-//
-//		return response;
-//	}
 
-	@PostMapping("send/one/customer")
-	public BaseResponse sendOne(@RequestBody SendRequest request) {
-		BaseResponse response = serviceNotif.sendOne(request);
+	@GetMapping("/send/one")
+	public String sendOne(HttpServletRequest request) {
+		String response = serviceNotif.sendOne("Berhasil");
 		return response;
 	}
 
@@ -98,10 +63,28 @@ public class ControllerNotif {
 		return response;
 	}
 
-	@PostMapping("send/all/customer")
-	public BaseResponse sendAll() {
-		BaseResponse response = serviceNotif.sendAll();
+	@RequestMapping(value = { "/send/all" }, method = RequestMethod.POST, consumes = {
+			MediaType.ALL_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public BaseResponse sendAll(HttpServletRequest request, @RequestBody @Valid SendAllRequest objectRequest)
+			throws IllegalAccessException, InvocationTargetException, IOException {
+
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString = mapper.writeValueAsString(objectRequest);
+
+		Object responses = serviceNotif.sendAll(objectRequest);
+		BaseResponse response = new BaseResponse();
+		BeanUtils.copyProperties(responses, response);
+
 		return response;
+
 	}
+
+//	@PostMapping("send/all/customer")
+//	public BaseResponse sendAll() {
+//		BaseResponse response = serviceNotif.sendAll();
+//		return response;
+//	}
+
 
 }
