@@ -32,32 +32,31 @@ import com.siemo.notif.system.model.MasterData;
 import com.siemo.notif.system.repository.RepositoryNotif;
 import com.siemo.notif.system.service.ServiceNotif;
 
-
 @Service
-@PropertySource(value="classpath:/config/path.properties")
+@PropertySource(value = "classpath:/config/path.properties")
 public class ServiceNotifImpl implements ServiceNotif {
-	
+
 	@Autowired
 	@Qualifier("batchrest")
 	private BaseBackendService batchrest;
 
 	@Autowired
 	Environment env;
-	
+
 	@Autowired
 	private RestUtil restUtil;
-	
+
 	@Autowired
 	private RepositoryNotif repositoryNotif;
-	
+
 	@Override
 	public BaseResponse saveData(SaveRequest request) {
 		MasterData masterData = new MasterData();
-		masterData = repositoryNotif.save(masterData);	
+		masterData = repositoryNotif.save(masterData);
 		BaseResponse response = new BaseResponse();
 		response.setMessage("simpan");
-		response.setStatus("berhasil");	
-		return  response;
+		response.setStatus("berhasil");
+		return response;
 	}
 
 	@Override
@@ -84,33 +83,16 @@ public class ServiceNotifImpl implements ServiceNotif {
 		SendBatchRequest inqRequest = new SendBatchRequest();
 		Message body = new Message();
 		body.setBody(request.getBody());
-//		
-//		Tokens listTokens = new Tokens();
-//		ArrayList<MasterData> listToken = repositoryNotif.findTokensByUserId(request.getUserId());
-//		listTokens.setListTokens(listTokens);
-//		
-//		ArrayList<String> aaa = new ArrayList<>();
-//		aaa.add("yey");
-//		Recipients data = new Recipients();
-//		data.setTokens(aaa);
 
-//		
-//		ArrayList<MasterData> listToken = repositoryNotif.findTokensByUserId(request.getUserId());
-//		Recipients data = new Recipients();
-//		ArrayList<String> aaa = new ArrayList<>();
-//		aaa.add(listToken.get(2).toString());
-//		data.setTokens(aaa);
-		
 		ArrayList<String> listToken = new ArrayList<>();
 		ArrayList<MasterData> listData = repositoryNotif.findTokensByUserId(request.getUserId());
-		for(int i=0; i<listData.size(); i++) {
+		for (int i = 0; i < listData.size(); i++) {
 			MasterData data = listData.get(i);
 			listToken.add(data.getTokenDevice());
-		}	
+		}
 		Recipients data = new Recipients();
 		data.setTokens(listToken);
-	
-		
+
 		inqRequest.setGroup_id("Mb01234567");
 		inqRequest.setCustom_payload("{}");
 		inqRequest.setDeeplink("www.com");
@@ -118,7 +100,8 @@ public class ServiceNotifImpl implements ServiceNotif {
 		inqRequest.setPush_time("now");
 		inqRequest.setSandbox(false);
 		inqRequest.setRecipients(data);
-		ResponseEntity<SendBatchResponse> inqOmni_response = batchrest.postForEntity(inqUri, inqRequest, SendBatchResponse.class);
+		ResponseEntity<SendBatchResponse> inqOmni_response = batchrest.postForEntity(inqUri, inqRequest,
+				SendBatchResponse.class);
 		HttpStatus inqHttpStatus = inqOmni_response.getStatusCode();
 		SendBatchResponse bodyOmniResponse = inqOmni_response.getBody();
 		response.setMessage(bodyOmniResponse.getMessage());
@@ -128,7 +111,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 
 	@Override
 	public BaseResponse sendGroup(SendGroupRequest request) {
-		
+
 		return null;
 	}
 
@@ -137,6 +120,5 @@ public class ServiceNotifImpl implements ServiceNotif {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }
