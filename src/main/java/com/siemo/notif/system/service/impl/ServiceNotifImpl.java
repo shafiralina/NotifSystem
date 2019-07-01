@@ -78,8 +78,9 @@ public class ServiceNotifImpl implements ServiceNotif {
 	@Override
 	public BaseResponse sendOne(SendOneRequest request) {
 		BaseResponse response = new BaseResponse();
-		String uri = env.getProperty("batch.send.notification");
+		String uri = env.getProperty("batch.send.one.notification");
 		String inqUri = restUtil.generateURI(uri);
+		
 		SendBatchRequest inqRequest = new SendBatchRequest();
 		Message body = new Message();
 		body.setBody(request.getBody());
@@ -92,14 +93,15 @@ public class ServiceNotifImpl implements ServiceNotif {
 		}
 		Recipients data = new Recipients();
 		data.setTokens(listToken);
-
+		
+		inqRequest.setRecipients(data);
 		inqRequest.setGroup_id("Mb01234567");
 		inqRequest.setCustom_payload("{}");
 		inqRequest.setDeeplink("www.com");
 		inqRequest.setMessage(body);
 		inqRequest.setPush_time("now");
 		inqRequest.setSandbox(false);
-		inqRequest.setRecipients(data);
+		
 		ResponseEntity<SendBatchResponse> inqOmni_response = batchrest.postForEntity(inqUri, inqRequest,
 				SendBatchResponse.class);
 		HttpStatus inqHttpStatus = inqOmni_response.getStatusCode();
@@ -117,8 +119,38 @@ public class ServiceNotifImpl implements ServiceNotif {
 
 	@Override
 	public BaseResponse sendAll(SendAllRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		BaseResponse response = new BaseResponse();
+		String uri = env.getProperty("batch.send.all.notification");
+		String inqUri = restUtil.generateURI(uri);
+		
+		SendBatchRequest inqRequest = new SendBatchRequest();
+		Message body = new Message();
+		body.setBody(request.getBody());
+
+		ArrayList<String> listToken = new ArrayList<>();
+		ArrayList<MasterData> listData = (ArrayList<MasterData>) repositoryNotif.findAll();
+		for (int i = 0; i < listData.size(); i++) {
+			MasterData data = listData.get(i);
+			listToken.add(data.getTokenDevice());
+		}
+		Recipients data = new Recipients();
+		data.setTokens(listToken);
+		
+		inqRequest.setRecipients(data);
+		inqRequest.setGroup_id("Mb01234567");
+		inqRequest.setCustom_payload("{}");
+		inqRequest.setDeeplink("www.com");
+		inqRequest.setMessage(body);
+		inqRequest.setPush_time("now");
+		inqRequest.setSandbox(false);
+		
+		ResponseEntity<SendBatchResponse> inqOmni_response = batchrest.postForEntity(inqUri, inqRequest,
+				SendBatchResponse.class);
+		HttpStatus inqHttpStatus = inqOmni_response.getStatusCode();
+		SendBatchResponse bodyOmniResponse = inqOmni_response.getBody();
+		response.setMessage(bodyOmniResponse.getMessage());
+		response.setStatus(bodyOmniResponse.getStatus());
+		return response;
 	}
 
 }

@@ -56,7 +56,7 @@ public class ControllerNotif {
 	}
 	
 	@PostMapping("send/all/customer")
-	public BaseResponse sendAll(SendAllRequest request) {
+	public BaseResponse sendAll(@RequestBody SendAllRequest request) {
 		BaseResponse response = serviceNotif.sendAll(request);
 		return response;
 	}
