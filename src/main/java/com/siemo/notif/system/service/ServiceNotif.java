@@ -7,6 +7,8 @@ import com.siemo.notif.system.message.SaveRequest;
 import com.siemo.notif.system.message.SendAllRequest;
 import com.siemo.notif.system.message.SendGroupRequest;
 import com.siemo.notif.system.message.SendOneRequest;
+import com.siemo.notif.system.message.SpecRequest;
+import com.siemo.notif.system.message.SpecResponse;
 
 public interface ServiceNotif {
 	public BaseResponse saveData(SaveRequest request);
@@ -20,4 +22,6 @@ public interface ServiceNotif {
 	public BaseResponse sendGroup(SendGroupRequest request);
 
 	public BaseResponse sendAll(SendAllRequest request);
+	
+	public SpecResponse spec(SpecRequest request);
 }

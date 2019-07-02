@@ -72,6 +72,13 @@
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
 		</dependency>
+		
+		<!-- Path -->
+		<dependency>
+			<groupId>net.kaczmarzyk</groupId>
+			<artifactId>specification-arg-resolver</artifactId>
+			<version>0.9.2</version>
+		</dependency>
         
 	</dependencies>
 	

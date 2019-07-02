@@ -13,9 +13,10 @@ import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
 import com.siemo.notif.system.message.SaveRequest;
 import com.siemo.notif.system.message.SendAllRequest;
-import com.siemo.notif.system.message.SendBatchRequest;
 import com.siemo.notif.system.message.SendGroupRequest;
 import com.siemo.notif.system.message.SendOneRequest;
+import com.siemo.notif.system.message.SpecRequest;
+import com.siemo.notif.system.message.SpecResponse;
 import com.siemo.notif.system.service.ServiceNotif;
 
 @RestController
@@ -60,5 +61,12 @@ public class ControllerNotif {
 		BaseResponse response = serviceNotif.sendAll(request);
 		return response;
 	}
+	
+	@PostMapping("specification")
+	public SpecResponse spec(@RequestBody SpecRequest request) {
+		SpecResponse response = serviceNotif.spec(request);
+		return response;
+	}
+	
 
 }

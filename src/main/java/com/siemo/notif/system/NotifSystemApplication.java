@@ -10,6 +10,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.siemo.notif.system.aspect.AuditTrail;
 import com.siemo.notif.system.base.service.BaseBackendService;
+import com.siemo.notif.system.repository.BaseCriteriaService;
+import com.siemo.notif.system.repository.RepositoryNotif;
 
 @SpringBootApplication
 @PropertySource(value = "classpath:/config/rest.properties")
@@ -27,6 +29,8 @@ public class NotifSystemApplication {
 	public AuditTrail auditTrail() {
 		return new AuditTrail();
 	}
+	
+	
 	
 	@Bean(name = "batchrest")
 	public BaseBackendService getOmnirest(){
