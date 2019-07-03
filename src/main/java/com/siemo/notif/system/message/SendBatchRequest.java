@@ -3,8 +3,8 @@ package com.siemo.notif.system.message;
 public class SendBatchRequest {
 	private String group_id;
 	private String push_time;
-	private Message message = new Message();
-	private Recipients recipients = new Recipients();
+	private BatchMessage batchMessage = new BatchMessage();
+	private BatchRecipients batchRecipients = new BatchRecipients();
 	private boolean sandbox;
 	private String deeplink;
 	private String custom_payload;
@@ -49,20 +49,20 @@ public class SendBatchRequest {
 		this.custom_payload = custom_payload;
 	}
 
-	public Message getMessage() {
-		return message;
+	public BatchMessage getMessage() {
+		return batchMessage;
 	}
 
-	public void setMessage(Message message) {
-		this.message = message;
+	public void setMessage(BatchMessage batchMessage) {
+		this.batchMessage = batchMessage;
 	}
 
-	public Recipients getRecipients() {
-		return recipients;
+	public BatchRecipients getRecipients() {
+		return batchRecipients;
 	}
 
-	public void setRecipients(Recipients recipients) {
-		this.recipients = recipients;
+	public void setRecipients(BatchRecipients batchRecipients) {
+		this.batchRecipients = batchRecipients;
 	}
 
 }

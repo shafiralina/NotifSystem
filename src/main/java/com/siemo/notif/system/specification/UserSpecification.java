@@ -7,9 +7,10 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.siemo.notif.system.model.Group;
 import com.siemo.notif.system.model.MasterData;
 
-public class UserSpecification implements Specification<MasterData> {
+public class UserSpecification implements Specification<Group> {
 	 private SearchCriteria criteria;
 	 
 	    public UserSpecification(SearchCriteria criteria) {
@@ -19,7 +20,7 @@ public class UserSpecification implements Specification<MasterData> {
 
 		@Override
 	    public Predicate toPredicate
-	      (Root<MasterData> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+	      (Root<Group> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 	  
 	        if (criteria.getOperation().equalsIgnoreCase(">")) {
 	            return builder.greaterThanOrEqualTo(

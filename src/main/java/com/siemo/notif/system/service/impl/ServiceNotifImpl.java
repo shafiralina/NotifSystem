@@ -1,22 +1,16 @@
 package com.siemo.notif.system.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.xml.crypto.Data;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.StreamingHttpOutputMessage.Body;
 import org.springframework.stereotype.Service;
 
 import com.siemo.notif.system.base.service.BaseBackendService;
@@ -24,25 +18,22 @@ import com.siemo.notif.system.base.util.service.RestUtil;
 import com.siemo.notif.system.message.BaseResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
-import com.siemo.notif.system.message.Message;
-import com.siemo.notif.system.message.Recipients;
+import com.siemo.notif.system.message.BatchMessage;
+import com.siemo.notif.system.message.BatchRecipients;
 import com.siemo.notif.system.message.SaveRequest;
 import com.siemo.notif.system.message.SendAllRequest;
 import com.siemo.notif.system.message.SendBatchRequest;
 import com.siemo.notif.system.message.SendBatchResponse;
 import com.siemo.notif.system.message.SendGroupRequest;
 import com.siemo.notif.system.message.SendOneRequest;
-import com.siemo.notif.system.message.SpecRequest;
-import com.siemo.notif.system.message.SpecResponse;
-import com.siemo.notif.system.message.Tokens;
+import com.siemo.notif.system.model.Group;
 import com.siemo.notif.system.model.MasterData;
-import com.siemo.notif.system.repository.BaseCriteriaService;
+import com.siemo.notif.system.repository.RepositoryGroup;
 import com.siemo.notif.system.repository.RepositoryNotif;
 import com.siemo.notif.system.service.ServiceNotif;
 import com.siemo.notif.system.specification.SearchCriteria;
 import com.siemo.notif.system.specification.UserSpecification;
 
-import javassist.expr.NewExpr;
 
 @Service
 @PropertySource(value = "classpath:/config/path.properties")
@@ -64,12 +55,12 @@ public class ServiceNotifImpl implements ServiceNotif {
 	private RepositoryNotif repositoryNotif;
 	
 	@Autowired
-	@Qualifier("criteria")
-	private BaseCriteriaService criteria;
+	private RepositoryGroup repositoryGroup;
 
 	@Override
 	public BaseResponse saveData(SaveRequest request) {
-		MasterData masterData = new MasterData();
+		Group idGroup = repositoryGroup.findByCategoryAndDetail(request.getCategory(), request.getDetail());
+		MasterData masterData = new MasterData(request.getUserId(),request.getTokenDevice(), request.getChannel(), request.getStatus(), request.getVersi(), idGroup);
 		masterData = repositoryNotif.save(masterData);
 		BaseResponse response = new BaseResponse();
 		response.setMessage("simpan");
@@ -100,7 +91,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 		String inqUri = restUtil.generateURI(uri);
 		
 		SendBatchRequest inqRequest = new SendBatchRequest();
-		Message body = new Message();
+		BatchMessage body = new BatchMessage();
 		body.setBody(request.getBody());
 
 		ArrayList<String> listToken = new ArrayList<>();
@@ -109,7 +100,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 			MasterData data = listData.get(i);
 			listToken.add(data.getTokenDevice());
 		}
-		Recipients data = new Recipients();
+		BatchRecipients data = new BatchRecipients();
 		data.setTokens(listToken);
 		
 		String groupID = env.getProperty("batch.group.id");
@@ -136,11 +127,6 @@ public class ServiceNotifImpl implements ServiceNotif {
 		return response;
 	}
 
-	@Override
-	public BaseResponse sendGroup(SendGroupRequest request) {
-
-		return null;
-	}
 
 	@Override
 	public BaseResponse sendAll(SendAllRequest request) {
@@ -149,7 +135,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 		String inqUri = restUtil.generateURI(uri);
 		
 		SendBatchRequest inqRequest = new SendBatchRequest();
-		Message body = new Message();
+		BatchMessage body = new BatchMessage();
 		body.setBody(request.getBody());
 
 		ArrayList<String> listToken = new ArrayList<>();
@@ -158,16 +144,23 @@ public class ServiceNotifImpl implements ServiceNotif {
 			MasterData data = listData.get(i);
 			listToken.add(data.getTokenDevice());
 		}
-		Recipients data = new Recipients();
+		BatchRecipients data = new BatchRecipients();
 		data.setTokens(listToken);
 		
+		String groupID = env.getProperty("batch.group.id");
+		String custom = env.getProperty("batch.custom.payload");
+		String deeplink = env.getProperty("batch.deeplink");
+		String pushtime = env.getProperty("batch.push.time");
+		String sandbox = env.getProperty("batch.sandbox");
+		boolean sand = Boolean.valueOf(sandbox);
+		
 		inqRequest.setRecipients(data);
-		inqRequest.setGroup_id("Mb01234567");
-		inqRequest.setCustom_payload("{}");
-		inqRequest.setDeeplink("www.com");
+		inqRequest.setGroup_id(groupID);
+		inqRequest.setCustom_payload(custom);
+		inqRequest.setDeeplink(deeplink);
 		inqRequest.setMessage(body);
-		inqRequest.setPush_time("now");
-		inqRequest.setSandbox(false);
+		inqRequest.setPush_time(pushtime);
+		inqRequest.setSandbox(sand);
 		
 		ResponseEntity<SendBatchResponse> inqOmni_response = batchrest.postForEntity(inqUri, inqRequest,
 				SendBatchResponse.class);
@@ -180,17 +173,77 @@ public class ServiceNotifImpl implements ServiceNotif {
 	
 	
 	@Override
-	public SpecResponse spec(SpecRequest request) {
-		HashMap<String, Object> map = new HashMap<>();
-        map.put("channel", "baru");
-        map.put("systemOperasi", "ios");
-        
-        SpecResponse response = new SpecResponse();
-       
-        
-//        List<MasterData> a = repositoryNotif.findSearchHistoryRib(map);
-//        response.setChannel(a);
-//        response.setSystemOperasi(a);
+	public BaseResponse sendGroup(SendGroupRequest request) {
+		String category = null;
+		String detail = null;
+		
+		BaseResponse response = new BaseResponse();
+		String uri = env.getProperty("batch.send.all.notification");
+		String inqUri = restUtil.generateURI(uri);
+		
+		SendBatchRequest inqRequest = new SendBatchRequest();
+		BatchMessage body = new BatchMessage();
+		body.setBody(request.getBody());
+		
+		//spec
+		if (request.getGroup().containsKey("category")==false && request.getGroup().containsKey("detail")==true ) {
+			 category = "";
+			 detail = request.getGroup().get("detail").toString();
+		} else if(request.getGroup().containsKey("category")==true && request.getGroup().containsKey("detail")==false) {
+			category = request.getGroup().get("category").toString();
+			detail = "";
+		} else if(request.getGroup().containsKey("category")==false && request.getGroup().containsKey("detail")==false) {
+			category ="";
+			detail = "";
+		} else {
+			category = request.getGroup().get("category").toString();
+			detail = request.getGroup().get("detail").toString();
+		}
+		
+		UserSpecification spec1 = 
+			      new UserSpecification(new SearchCriteria("category", ":", category));
+			    UserSpecification spec2 = 
+			      new UserSpecification(new SearchCriteria("detail", ":", detail));
+			    
+			    List<Group> results = repositoryGroup.findAll(Specification.where(spec1).and(spec2));
+			    
+			    List<MasterData> listId = null;
+			    List<MasterData> listCollect = new ArrayList<MasterData>();
+			    for(int i=0; i < results.size(); i++) {
+			    	int id = results.get(i).getId();
+			    	listId = repositoryNotif.findTokensByGroupId(id);
+			    	listCollect.addAll(listId);
+			    }
+	
+			    ArrayList<String> listToken = new ArrayList<>();
+				for (int i = 0; i < listCollect.size(); i++) {
+					listToken.add(listCollect.get(i).getTokenDevice());
+				}
+				BatchRecipients data = new BatchRecipients();
+				data.setTokens(listToken);
+		
+				
+		String groupID = env.getProperty("batch.group.id");
+		String custom = env.getProperty("batch.custom.payload");
+		String deeplink = env.getProperty("batch.deeplink");
+		String pushtime = env.getProperty("batch.push.time");
+		String sandbox = env.getProperty("batch.sandbox");
+		boolean sand = Boolean.valueOf(sandbox);
+		
+		inqRequest.setRecipients(data);
+		inqRequest.setGroup_id(groupID);
+		inqRequest.setCustom_payload(custom);
+		inqRequest.setDeeplink(deeplink);
+		inqRequest.setMessage(body);
+		inqRequest.setPush_time(pushtime);
+		inqRequest.setSandbox(sand);
+		
+		ResponseEntity<SendBatchResponse> inqOmni_response = batchrest.postForEntity(inqUri, inqRequest,
+				SendBatchResponse.class);
+		HttpStatus inqHttpStatus = inqOmni_response.getStatusCode();
+		SendBatchResponse bodyOmniResponse = inqOmni_response.getBody();
+		response.setMessage(bodyOmniResponse.getMessage());
+		response.setStatus(bodyOmniResponse.getStatus());
 		return response;
 	}
 

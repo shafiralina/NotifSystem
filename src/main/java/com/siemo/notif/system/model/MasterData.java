@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -38,7 +40,15 @@ public class MasterData {
 	private String channel;
 	
 	@Column
-	private String systemOperasi;
+	private String versi;
+	
+	@Column
+	private String status;
+	
+	
+	@ManyToOne
+	private Group group;
+
 	
 	public MasterData() {
 		
@@ -48,11 +58,13 @@ public class MasterData {
 		this.userId = userId;
 	}
 	
-	public MasterData(String userId, String tokenDevice, String channel, String systemOperasi) {
+	public MasterData(String userId, String tokenDevice, String channel, String status, String versi, Group group) {
 		this.userId = userId;
 		this.tokenDevice = tokenDevice;
 		this.channel = channel;
-		this.systemOperasi = systemOperasi;
+		this.status = status;
+		this.versi = versi;
+		this.group = group;
 	}
 
 	@Id
@@ -122,14 +134,30 @@ public class MasterData {
 		this.channel = channel;
 	}
 
-	public String getSystemOperasi() {
-		return systemOperasi;
+	public String getVersi() {
+		return versi;
 	}
 
-	public void setSystemOperasi(String systemOperasi) {
-		this.systemOperasi = systemOperasi;
+	public void setVersi(String versi) {
+		this.versi = versi;
 	}
-	
-	
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	@JoinColumn(name="groupId")
+	@ManyToOne
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
+	}
 			
 }

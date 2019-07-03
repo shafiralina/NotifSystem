@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import com.siemo.notif.system.model.MasterData;
 
 @Repository
-public interface RepositoryNotif extends CrudRepository<MasterData, String>, JpaSpecificationExecutor<MasterData>{
+public interface RepositoryNotif extends CrudRepository<MasterData, String>{
 	List<MasterData> findByUserId(String userId);
 	ArrayList<MasterData> findTokensByUserId(String userId);
-//	List<MasterData> findSearchHistoryRib(Map<String, Object> criteria);
+	ArrayList<MasterData> findTokensByGroupId(int groupId);
 }

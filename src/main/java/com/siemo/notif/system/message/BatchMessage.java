@@ -1,13 +1,13 @@
 package com.siemo.notif.system.message;
 
-public class Message {
+public class BatchMessage {
 	private String body;
 	
-	public Message() {
+	public BatchMessage() {
 		
 	}
 	
-	public Message(String body) {
+	public BatchMessage(String body) {
 		this.body = body;
 	}
 

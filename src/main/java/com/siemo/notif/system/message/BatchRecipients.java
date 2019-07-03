@@ -3,14 +3,14 @@ package com.siemo.notif.system.message;
 import java.util.ArrayList;
 
 
-public class Recipients {
+public class BatchRecipients {
 	private ArrayList<String> tokens;
 	
-	public Recipients() {
+	public BatchRecipients() {
 		
 	}
 	
-	public Recipients(ArrayList<String> tokens) {
+	public BatchRecipients(ArrayList<String> tokens) {
 		this.tokens = tokens;
 	}
 
