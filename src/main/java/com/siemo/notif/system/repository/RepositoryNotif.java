@@ -12,6 +12,7 @@ import com.siemo.notif.system.model.MasterData;
 @Repository
 public interface RepositoryNotif extends CrudRepository<MasterData, String>{
 	List<MasterData> findByUserId(String userId);
+	List<MasterData> findMasterDataIdByUserId(String userId);
 	ArrayList<MasterData> findTokensByUserId(String userId);
 	ArrayList<MasterData> findTokensByGroupId(int groupId);
 }

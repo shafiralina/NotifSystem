@@ -58,13 +58,14 @@ public class MasterData {
 		this.userId = userId;
 	}
 	
-	public MasterData(String userId, String tokenDevice, String channel, String status, String versi, Group group) {
+	public MasterData(String userId, String tokenDevice, String channel, String status, String versi, Group group, Date createdDated) {
 		this.userId = userId;
 		this.tokenDevice = tokenDevice;
 		this.channel = channel;
 		this.status = status;
 		this.versi = versi;
 		this.group = group;
+		this.createdDated = createdDated;
 	}
 
 	@Id

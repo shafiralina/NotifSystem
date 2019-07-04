@@ -1,6 +1,9 @@
 package com.siemo.notif.system.service.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.siemo.notif.system.base.service.BaseBackendService;
 import com.siemo.notif.system.base.util.service.RestUtil;
 import com.siemo.notif.system.message.BaseResponse;
@@ -27,12 +32,17 @@ import com.siemo.notif.system.message.SendBatchResponse;
 import com.siemo.notif.system.message.SendGroupRequest;
 import com.siemo.notif.system.message.SendOneRequest;
 import com.siemo.notif.system.model.Group;
+import com.siemo.notif.system.model.HistoryNotificationExecution;
+import com.siemo.notif.system.model.HistoryNotificationExecution.action;
 import com.siemo.notif.system.model.MasterData;
 import com.siemo.notif.system.repository.RepositoryGroup;
+import com.siemo.notif.system.repository.RepositoryHistory;
 import com.siemo.notif.system.repository.RepositoryNotif;
 import com.siemo.notif.system.service.ServiceNotif;
 import com.siemo.notif.system.specification.SearchCriteria;
 import com.siemo.notif.system.specification.UserSpecification;
+
+import springfox.documentation.spring.web.json.Json;
 
 
 @Service
@@ -56,11 +66,15 @@ public class ServiceNotifImpl implements ServiceNotif {
 	
 	@Autowired
 	private RepositoryGroup repositoryGroup;
+	
+	@Autowired
+	private RepositoryHistory repositoryHistory;
 
 	@Override
 	public BaseResponse saveData(SaveRequest request) {
 		Group idGroup = repositoryGroup.findByCategoryAndDetail(request.getCategory(), request.getDetail());
-		MasterData masterData = new MasterData(request.getUserId(),request.getTokenDevice(), request.getChannel(), request.getStatus(), request.getVersi(), idGroup);
+		Date time = new Date();
+		MasterData masterData = new MasterData(request.getUserId(), request.getTokenDevice(), request.getChannel(), request.getStatus(), request.getVersi(), idGroup, time);
 		masterData = repositoryNotif.save(masterData);
 		BaseResponse response = new BaseResponse();
 		response.setMessage("simpan");
@@ -118,12 +132,43 @@ public class ServiceNotifImpl implements ServiceNotif {
 		inqRequest.setPush_time(pushtime);
 		inqRequest.setSandbox(sand);
 		
-		ResponseEntity<SendBatchResponse> inqOmni_response = batchrest.postForEntity(inqUri, inqRequest,
+		ResponseEntity<SendBatchResponse> inqBatch_response = batchrest.postForEntity(inqUri, inqRequest,
 				SendBatchResponse.class);
-		HttpStatus inqHttpStatus = inqOmni_response.getStatusCode();
-		SendBatchResponse bodyOmniResponse = inqOmni_response.getBody();
-		response.setMessage(bodyOmniResponse.getMessage());
-		response.setStatus(bodyOmniResponse.getStatus());
+		HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
+		SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
+		response.setMessage(bodyBatchResponse.getMessage());
+		response.setStatus(bodyBatchResponse.getStatus());
+
+		List<String> listId = new ArrayList<>();
+		List<MasterData> listMasterDataId = repositoryNotif.findMasterDataIdByUserId(request.getUserId());
+		for (int i = 0; i < listMasterDataId.size(); i++) {
+			MasterData MDId = listMasterDataId.get(i);
+			listId.add(MDId.getId());
+		}
+		
+		String hist = null;
+		hist = listId.toString();
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String reqHistory = null;
+		try {
+			reqHistory = mapper.writeValueAsString(inqRequest);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String resHistory = null;
+		try {
+			resHistory = mapper.writeValueAsString(bodyBatchResponse);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Date date = new Date();
+		HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ONE.toString(), date, reqHistory, resHistory, hist, bodyBatchResponse.getStatus());
+		history = repositoryHistory.save(history);
+		
 		return response;
 	}
 
@@ -162,12 +207,12 @@ public class ServiceNotifImpl implements ServiceNotif {
 		inqRequest.setPush_time(pushtime);
 		inqRequest.setSandbox(sand);
 		
-		ResponseEntity<SendBatchResponse> inqOmni_response = batchrest.postForEntity(inqUri, inqRequest,
+		ResponseEntity<SendBatchResponse> inqBatch_response = batchrest.postForEntity(inqUri, inqRequest,
 				SendBatchResponse.class);
-		HttpStatus inqHttpStatus = inqOmni_response.getStatusCode();
-		SendBatchResponse bodyOmniResponse = inqOmni_response.getBody();
-		response.setMessage(bodyOmniResponse.getMessage());
-		response.setStatus(bodyOmniResponse.getStatus());
+		HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
+		SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
+		response.setMessage(bodyBatchResponse.getMessage());
+		response.setStatus(bodyBatchResponse.getStatus());
 		return response;
 	}
 	
@@ -238,12 +283,12 @@ public class ServiceNotifImpl implements ServiceNotif {
 		inqRequest.setPush_time(pushtime);
 		inqRequest.setSandbox(sand);
 		
-		ResponseEntity<SendBatchResponse> inqOmni_response = batchrest.postForEntity(inqUri, inqRequest,
+		ResponseEntity<SendBatchResponse> inqBatch_response = batchrest.postForEntity(inqUri, inqRequest,
 				SendBatchResponse.class);
-		HttpStatus inqHttpStatus = inqOmni_response.getStatusCode();
-		SendBatchResponse bodyOmniResponse = inqOmni_response.getBody();
-		response.setMessage(bodyOmniResponse.getMessage());
-		response.setStatus(bodyOmniResponse.getStatus());
+		HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
+		SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
+		response.setMessage(bodyBatchResponse.getMessage());
+		response.setStatus(bodyBatchResponse.getStatus());
 		return response;
 	}
 
