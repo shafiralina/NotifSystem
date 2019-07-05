@@ -139,15 +139,17 @@ public class ServiceNotifImpl implements ServiceNotif {
 		response.setMessage(bodyBatchResponse.getMessage());
 		response.setStatus(bodyBatchResponse.getStatus());
 
+		
+		//Prepare for HistoryNotificationExecution storage
 		List<String> listId = new ArrayList<>();
-		List<MasterData> listMasterDataId = repositoryNotif.findMasterDataIdByUserId(request.getUserId());
-		for (int i = 0; i < listMasterDataId.size(); i++) {
-			MasterData MDId = listMasterDataId.get(i);
+		List<MasterData> listAllMasterDataId = repositoryNotif.findMasterDataIdByUserId(request.getUserId());
+		for (int i = 0; i < listAllMasterDataId.size(); i++) {
+			MasterData MDId = listAllMasterDataId.get(i);
 			listId.add(MDId.getId());
 		}
 		
-		String hist = null;
-		hist = listId.toString();
+		String listMasterDataId = null;
+		listMasterDataId = listId.toString();
 		
 		ObjectMapper mapper = new ObjectMapper();
 		String reqHistory = null;
@@ -166,7 +168,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 		}
 		
 		Date date = new Date();
-		HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ONE.toString(), date, reqHistory, resHistory, hist, bodyBatchResponse.getStatus());
+		HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ONE.toString(), date, reqHistory, resHistory, listMasterDataId, bodyBatchResponse.getStatus());
 		history = repositoryHistory.save(history);
 		
 		return response;
@@ -213,6 +215,39 @@ public class ServiceNotifImpl implements ServiceNotif {
 		SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
 		response.setMessage(bodyBatchResponse.getMessage());
 		response.setStatus(bodyBatchResponse.getStatus());
+		
+		//Prepare for HistoryNotificationExecution storage
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String reqHistory = null;
+		try {
+			reqHistory = mapper.writeValueAsString(inqRequest);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String resHistory = null;
+		try {
+			resHistory = mapper.writeValueAsString(bodyBatchResponse);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		List<String> listId = new ArrayList<>();
+		List<MasterData> listDataMaster =  (List<MasterData>) repositoryNotif.findAll();
+		for (int i = 0; i < listData.size(); i++) {
+			MasterData dataMaster = listData.get(i);
+			listId.add(dataMaster.getId());
+		}
+		String listMasterDataId = null;
+		listMasterDataId = listId.toString();
+		
+		Date date = new Date();
+		HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ALL.toString(), date, reqHistory, resHistory, listMasterDataId, bodyBatchResponse.getStatus());
+		history = repositoryHistory.save(history);
+		
 		return response;
 	}
 	
@@ -230,7 +265,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 		BatchMessage body = new BatchMessage();
 		body.setBody(request.getBody());
 		
-		//spec
+		//specification or criteria
 		if (request.getGroup().containsKey("category")==false && request.getGroup().containsKey("detail")==true ) {
 			 category = "";
 			 detail = request.getGroup().get("detail").toString();
@@ -289,6 +324,43 @@ public class ServiceNotifImpl implements ServiceNotif {
 		SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
 		response.setMessage(bodyBatchResponse.getMessage());
 		response.setStatus(bodyBatchResponse.getStatus());
+		
+		//Prepare for HistoryNotificationExecution storage
+		
+				ObjectMapper mapper = new ObjectMapper();
+				String reqHistory = null;
+				try {
+					reqHistory = mapper.writeValueAsString(inqRequest);
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				String resHistory = null;
+				try {
+					resHistory = mapper.writeValueAsString(bodyBatchResponse);
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	
+				List<MasterData> listMDId = null;
+			    List<MasterData> listCollectMDId = new ArrayList<MasterData>();
+			    for(int i=0; i < results.size(); i++) {
+			    	int Id = results.get(i).getId();
+			    	listMDId = repositoryNotif.findMasterDataIdByGroupId(Id);
+			    	listCollectMDId.addAll(listMDId);
+			    }
+	
+			    List<String> listMasterDataId = new ArrayList<>();
+				for (int i = 0; i < listCollect.size(); i++) {
+					listMasterDataId.add(listCollectMDId.get(i).getId());
+				}
+				
+				Date date = new Date();
+				HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_GROUP.toString(), date, reqHistory, resHistory, listMasterDataId.toString(), bodyBatchResponse.getStatus());
+				history = repositoryHistory.save(history);
+				
+				
 		return response;
 	}
 

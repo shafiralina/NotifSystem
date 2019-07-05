@@ -15,4 +15,5 @@ public interface RepositoryNotif extends CrudRepository<MasterData, String>{
 	List<MasterData> findMasterDataIdByUserId(String userId);
 	ArrayList<MasterData> findTokensByUserId(String userId);
 	ArrayList<MasterData> findTokensByGroupId(int groupId);
+	List<MasterData> findMasterDataIdByGroupId(int groupId);
 }
