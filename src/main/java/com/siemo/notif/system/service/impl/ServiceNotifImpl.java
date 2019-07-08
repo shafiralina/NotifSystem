@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,6 +24,7 @@ import com.siemo.notif.system.base.util.service.RestUtil;
 import com.siemo.notif.system.message.BaseResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
+import com.siemo.notif.system.message.ManageDataUserRequest;
 import com.siemo.notif.system.message.BatchMessage;
 import com.siemo.notif.system.message.BatchRecipients;
 import com.siemo.notif.system.message.SaveRequest;
@@ -97,11 +99,24 @@ public class ServiceNotifImpl implements ServiceNotif {
 		response.setListData(listData);
 		return response;
 	}
+	
+	@Override
+	public BaseResponse manageDataUser(ManageDataUserRequest request) {
+		Date date = new Date();
+		MasterData data = repositoryNotif.findAllById(request.getMasterDataId());
+		data.setStatus(request.getStatus());
+		data.setUpdateDated(date);
+		data = repositoryNotif.save(data);
+		BaseResponse response = new BaseResponse();
+		response.setMessage("update");
+		response.setStatus("berhasil");
+		return response;
+	}
 
 	@Override
 	public BaseResponse sendOne(SendOneRequest request) {
 		BaseResponse response = new BaseResponse();
-		String uri = env.getProperty("batch.send.one.notification");
+		String uri = env.getProperty("batch.send.notification");
 		String inqUri = restUtil.generateURI(uri);
 		
 		SendBatchRequest inqRequest = new SendBatchRequest();
@@ -109,10 +124,12 @@ public class ServiceNotifImpl implements ServiceNotif {
 		body.setBody(request.getBody());
 
 		ArrayList<String> listToken = new ArrayList<>();
-		ArrayList<MasterData> listData = repositoryNotif.findTokensByUserId(request.getUserId());
+		ArrayList<MasterData> listData = repositoryNotif.findTokensAndStatusByUserId(request.getUserId());
 		for (int i = 0; i < listData.size(); i++) {
 			MasterData data = listData.get(i);
-			listToken.add(data.getTokenDevice());
+			if(data.getStatus().equals("ACTIVE")) {
+				listToken.add(data.getTokenDevice());
+			}
 		}
 		BatchRecipients data = new BatchRecipients();
 		data.setTokens(listToken);
@@ -132,12 +149,13 @@ public class ServiceNotifImpl implements ServiceNotif {
 		inqRequest.setPush_time(pushtime);
 		inqRequest.setSandbox(sand);
 		
+		
 		ResponseEntity<SendBatchResponse> inqBatch_response = batchrest.postForEntity(inqUri, inqRequest,
 				SendBatchResponse.class);
 		HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
 		SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
-		response.setMessage(bodyBatchResponse.getMessage());
-		response.setStatus(bodyBatchResponse.getStatus());
+			response.setStatus("Berhasil");
+			response.setMessage("Token: "+bodyBatchResponse.getToken());
 
 		
 		//Prepare for HistoryNotificationExecution storage
@@ -145,7 +163,9 @@ public class ServiceNotifImpl implements ServiceNotif {
 		List<MasterData> listAllMasterDataId = repositoryNotif.findMasterDataIdByUserId(request.getUserId());
 		for (int i = 0; i < listAllMasterDataId.size(); i++) {
 			MasterData MDId = listAllMasterDataId.get(i);
+			if(MDId.getStatus().equals("ACTIVE")) {
 			listId.add(MDId.getId());
+			}
 		}
 		
 		String listMasterDataId = null;
@@ -168,7 +188,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 		}
 		
 		Date date = new Date();
-		HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ONE.toString(), date, reqHistory, resHistory, listMasterDataId, bodyBatchResponse.getStatus());
+		HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ONE.toString(), date, reqHistory, resHistory, listMasterDataId, response.getStatus());
 		history = repositoryHistory.save(history);
 		
 		return response;
@@ -178,7 +198,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 	@Override
 	public BaseResponse sendAll(SendAllRequest request) {
 		BaseResponse response = new BaseResponse();
-		String uri = env.getProperty("batch.send.all.notification");
+		String uri = env.getProperty("batch.send.notification");
 		String inqUri = restUtil.generateURI(uri);
 		
 		SendBatchRequest inqRequest = new SendBatchRequest();
@@ -189,7 +209,9 @@ public class ServiceNotifImpl implements ServiceNotif {
 		ArrayList<MasterData> listData = (ArrayList<MasterData>) repositoryNotif.findAll();
 		for (int i = 0; i < listData.size(); i++) {
 			MasterData data = listData.get(i);
+			if(data.getStatus().equals("ACTIVE")) {
 			listToken.add(data.getTokenDevice());
+			}
 		}
 		BatchRecipients data = new BatchRecipients();
 		data.setTokens(listToken);
@@ -213,8 +235,8 @@ public class ServiceNotifImpl implements ServiceNotif {
 				SendBatchResponse.class);
 		HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
 		SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
-		response.setMessage(bodyBatchResponse.getMessage());
-		response.setStatus(bodyBatchResponse.getStatus());
+			response.setStatus("Berhasil");
+			response.setMessage("Token: "+bodyBatchResponse.getToken());
 		
 		//Prepare for HistoryNotificationExecution storage
 		
@@ -239,13 +261,15 @@ public class ServiceNotifImpl implements ServiceNotif {
 		List<MasterData> listDataMaster =  (List<MasterData>) repositoryNotif.findAll();
 		for (int i = 0; i < listData.size(); i++) {
 			MasterData dataMaster = listData.get(i);
-			listId.add(dataMaster.getId());
+			if(dataMaster.getStatus().equals("ACTIVE")) {
+				listId.add(dataMaster.getId());		
+			}
 		}
 		String listMasterDataId = null;
 		listMasterDataId = listId.toString();
 		
 		Date date = new Date();
-		HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ALL.toString(), date, reqHistory, resHistory, listMasterDataId, bodyBatchResponse.getStatus());
+		HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ALL.toString(), date, reqHistory, resHistory, listMasterDataId, response.getStatus());
 		history = repositoryHistory.save(history);
 		
 		return response;
@@ -258,7 +282,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 		String detail = null;
 		
 		BaseResponse response = new BaseResponse();
-		String uri = env.getProperty("batch.send.all.notification");
+		String uri = env.getProperty("batch.send.notification");
 		String inqUri = restUtil.generateURI(uri);
 		
 		SendBatchRequest inqRequest = new SendBatchRequest();
@@ -297,7 +321,10 @@ public class ServiceNotifImpl implements ServiceNotif {
 	
 			    ArrayList<String> listToken = new ArrayList<>();
 				for (int i = 0; i < listCollect.size(); i++) {
+					MasterData data = listCollect.get(i);
+					if(data.getStatus().equals("ACTIVE")) {
 					listToken.add(listCollect.get(i).getTokenDevice());
+					}
 				}
 				BatchRecipients data = new BatchRecipients();
 				data.setTokens(listToken);
@@ -322,8 +349,8 @@ public class ServiceNotifImpl implements ServiceNotif {
 				SendBatchResponse.class);
 		HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
 		SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
-		response.setMessage(bodyBatchResponse.getMessage());
-		response.setStatus(bodyBatchResponse.getStatus());
+			response.setStatus("Berhasil");
+			response.setMessage("Token: "+bodyBatchResponse.getToken());
 		
 		//Prepare for HistoryNotificationExecution storage
 		
@@ -353,11 +380,14 @@ public class ServiceNotifImpl implements ServiceNotif {
 	
 			    List<String> listMasterDataId = new ArrayList<>();
 				for (int i = 0; i < listCollect.size(); i++) {
+					MasterData dataMD = listCollect.get(i);
+					if(dataMD.getStatus().equals("ACTIVE")) {
 					listMasterDataId.add(listCollectMDId.get(i).getId());
+					}
 				}
 				
 				Date date = new Date();
-				HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_GROUP.toString(), date, reqHistory, resHistory, listMasterDataId.toString(), bodyBatchResponse.getStatus());
+				HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_GROUP.toString(), date, reqHistory, resHistory, listMasterDataId.toString(), response.getStatus());
 				history = repositoryHistory.save(history);
 				
 				
