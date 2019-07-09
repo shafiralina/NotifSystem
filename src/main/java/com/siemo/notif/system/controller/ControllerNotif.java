@@ -54,11 +54,11 @@ public class ControllerNotif {
 		return response;
 	}
 
-	@PostMapping("send/group/customer")
-	public BaseResponse sendGroup(@RequestBody SendGroupRequest request) {
-		BaseResponse response = serviceNotif.sendGroup(request);
-		return response;
-	}
+//	@PostMapping("send/group/customer")
+//	public BaseResponse sendGroup(@RequestBody SendGroupRequest request) {
+//		BaseResponse response = serviceNotif.sendGroup(request);
+//		return response;
+//	}
 
 	@PostMapping("send/all/customer")
 	public BaseResponse sendAll(@RequestBody SendAllRequest request) {

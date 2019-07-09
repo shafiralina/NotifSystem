@@ -1,38 +1,26 @@
 package com.siemo.notif.system.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
 import javax.persistence.Id;
-import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
 
-@Entity
-@Table(name = "group_notif")
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "group_notif")
 public class Group {
 	
 	@Id
-	private Integer id;
+	private String id;
 	
-	@Column
 	private String category;
 	
-	@Column
 	private String detail;
 	
+	public Group(String category, String detail) {
+		this.category = category;
+		this.detail = detail;
+	}
 	
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
 	public String getCategory() {
 		return category;
 	}
@@ -47,6 +35,14 @@ public class Group {
 
 	public void setDetail(String detail) {
 		this.detail = detail;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 }

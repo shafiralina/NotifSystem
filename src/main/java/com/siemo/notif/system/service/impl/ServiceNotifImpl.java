@@ -38,6 +38,7 @@ import com.siemo.notif.system.model.HistoryNotificationExecution;
 import com.siemo.notif.system.model.HistoryNotificationExecution.action;
 import com.siemo.notif.system.model.MasterData;
 import com.siemo.notif.system.repository.RepositoryGroup;
+import com.siemo.notif.system.repository.RepositoryGroupMongo;
 import com.siemo.notif.system.repository.RepositoryHistory;
 import com.siemo.notif.system.repository.RepositoryNotif;
 import com.siemo.notif.system.service.ServiceNotif;
@@ -51,7 +52,13 @@ import springfox.documentation.spring.web.json.Json;
 @PropertySource(value = "classpath:/config/path.properties")
 @PropertySource(value = "classpath:/config/batch.properties")
 @Configuration
-public class ServiceNotifImpl implements ServiceNotif {
+public class ServiceNotifImpl extends DbSeeder implements ServiceNotif {
+
+	public ServiceNotifImpl(RepositoryNotif repositoryNotif, RepositoryGroupMongo repositoryGroup) {
+		super(repositoryNotif, repositoryGroup);
+		
+	}
+
 
 	@Autowired
 	@Qualifier("batchrest")
@@ -70,12 +77,19 @@ public class ServiceNotifImpl implements ServiceNotif {
 	private RepositoryGroup repositoryGroup;
 	
 	@Autowired
+	private RepositoryGroupMongo repositoryGroupMongo;
+	
+	
+	@Autowired
 	private RepositoryHistory repositoryHistory;
 
+	
+	
 	@Override
 	public BaseResponse saveData(SaveRequest request) {
-		Group idGroup = repositoryGroup.findByCategoryAndDetail(request.getCategory(), request.getDetail());
+		Group group = repositoryGroupMongo.findByCategoryAndDetail(request.getCategory(), request.getDetail());
 		Date time = new Date();
+		String idGroup = group.getId();
 		MasterData masterData = new MasterData(request.getUserId(), request.getTokenDevice(), request.getChannel(), request.getStatus(), request.getVersi(), idGroup, time);
 		masterData = repositoryNotif.save(masterData);
 		BaseResponse response = new BaseResponse();
@@ -314,7 +328,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 			    List<MasterData> listId = null;
 			    List<MasterData> listCollect = new ArrayList<MasterData>();
 			    for(int i=0; i < results.size(); i++) {
-			    	int id = results.get(i).getId();
+			    	String id = results.get(i).getId();
 			    	listId = repositoryNotif.findTokensByGroupId(id);
 			    	listCollect.addAll(listId);
 			    }
@@ -373,7 +387,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 				List<MasterData> listMDId = null;
 			    List<MasterData> listCollectMDId = new ArrayList<MasterData>();
 			    for(int i=0; i < results.size(); i++) {
-			    	int Id = results.get(i).getId();
+			    	String Id = results.get(i).getId();
 			    	listMDId = repositoryNotif.findMasterDataIdByGroupId(Id);
 			    	listCollectMDId.addAll(listMDId);
 			    }

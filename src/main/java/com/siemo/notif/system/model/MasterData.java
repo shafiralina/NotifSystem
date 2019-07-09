@@ -2,52 +2,34 @@ package com.siemo.notif.system.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "master_data")
+@Document(collection = "master_data")
 public class MasterData {
 	@Id
 	private String id;
 	
-	@Column
 	private String userId;
 	
-	@Column
 	private String tokenDevice;
 	
-	@Column
 	private String createdBy;
 	
-	@Column
 	private Date createdDated;
 	
-	@Column
 	private String updateBy;
 	
-	@Column
 	private Date updateDated;
 	
-	@Column
 	private String channel;
 	
-	@Column
 	private String versi;
 	
-	@Column
 	private String status;
 	
-	
-	@ManyToOne
-	private Group group;
+	private String groupId;
 
 	
 	public MasterData() {
@@ -58,19 +40,16 @@ public class MasterData {
 		this.userId = userId;
 	}
 	
-	public MasterData(String userId, String tokenDevice, String channel, String status, String versi, Group group, Date createdDated) {
+	public MasterData(String userId, String tokenDevice, String channel, String status, String versi, String groupId, Date createdDated) {
 		this.userId = userId;
 		this.tokenDevice = tokenDevice;
 		this.channel = channel;
 		this.status = status;
 		this.versi = versi;
-		this.group = group;
+		this.setGroupId(groupId);
 		this.createdDated = createdDated;
 	}
 
-	@Id
-	@GenericGenerator(strategy = "uuid", name = "system-uuid")
-	@GeneratedValue(generator = "system-uuid")
 	public String getId() {
 		return id;
 	}
@@ -151,14 +130,12 @@ public class MasterData {
 		this.status = status;
 	}
 
-	@JoinColumn(name="groupId")
-	@ManyToOne
-	public Group getGroup() {
-		return group;
+	public String getGroupId() {
+		return groupId;
 	}
 
-	public void setGroup(Group group) {
-		this.group = group;
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
 	}
 			
 }

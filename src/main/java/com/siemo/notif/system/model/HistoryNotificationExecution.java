@@ -2,47 +2,25 @@ package com.siemo.notif.system.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "history_notification_execution")
+@Document(collection = "history_notification_execution")
 public class HistoryNotificationExecution {
 		@Id
 		private String id;
 		
-		@Column
-		@NotNull
 		private String action;
 		
-		@Column
-		@NotNull
 		private Date executionDate;
 		
-		@Column
 		private String masterDataId;
 		
-		@Lob
-		@Column
-		@NotNull
 		private String requestObject;
 		
-		@Lob
-		@Column
-		@NotNull
 		private String responseObject;
-		
-		@Column
-		@NotNull
+
 		private String status;
 		
 		public enum action {
@@ -63,9 +41,6 @@ public class HistoryNotificationExecution {
 		}
 
 		
-		@Id
-		@GenericGenerator(strategy = "uuid", name = "system-uuid")
-		@GeneratedValue(generator = "system-uuid")
 		public String getId() {
 			return id;
 		}
