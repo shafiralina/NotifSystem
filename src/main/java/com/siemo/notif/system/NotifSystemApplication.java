@@ -3,6 +3,8 @@ package com.siemo.notif.system;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -12,6 +14,8 @@ import com.siemo.notif.system.aspect.AuditTrail;
 import com.siemo.notif.system.base.service.BaseBackendService;
 
 @SpringBootApplication
+@EnableEurekaClient
+@EnableCircuitBreaker
 @PropertySource(value = "classpath:/config/rest.properties")
 public class NotifSystemApplication {
 	

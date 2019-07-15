@@ -1,12 +1,14 @@
 package com.siemo.notif.system.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.siemo.notif.system.message.BaseResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
@@ -18,12 +20,23 @@ import com.siemo.notif.system.message.SendOneRequest;
 import com.siemo.notif.system.service.ServiceNotif;
 
 @RestController
-@RequestMapping(value = "/api/notifsystem")
+//@RequestMapping(value = "api/notifsystem")
 public class ControllerNotif {
 
 	@Autowired
 	private ServiceNotif serviceNotif;
 
+	@Autowired
+	private Environment env;
+	
+	@RequestMapping("/")
+	public String home() {
+		// This is useful for debugging
+		// When having multiple instance of gallery service running at different ports.
+		// We load balance among them, and display which instance received the request.
+		return "Hello from Gallery Service running at port: " + env.getProperty("local.server.port");
+	}
+	
 	@PostMapping("save/device")
 	public BaseResponse saveData(@RequestBody SaveRequest request) {
 		BaseResponse response = serviceNotif.saveData(request);
@@ -42,25 +55,25 @@ public class ControllerNotif {
 		return response;
 	}
 	
-	@PostMapping("update/device")
+	@RequestMapping("update/device")
 	public BaseResponse manageDataUser(@RequestBody ManageDataUserRequest request) {
 		BaseResponse response = serviceNotif.manageDataUser(request);
 		return response;
 	}
-
-	@PostMapping("send/one/customer")
+	
+	@RequestMapping("send/one/customer")
 	public BaseResponse sendOne(@RequestBody SendOneRequest request) {
 		BaseResponse response = serviceNotif.sendOne(request);
 		return response;
 	}
 
-	@PostMapping("send/group/customer")
+	@RequestMapping("send/group/customer")
 	public BaseResponse sendGroup(@RequestBody SendGroupRequest request) {
 		BaseResponse response = serviceNotif.sendGroup(request);
 		return response;
 	}
 
-	@PostMapping("send/all/customer")
+	@RequestMapping("send/all/customer")
 	public BaseResponse sendAll(@RequestBody SendAllRequest request) {
 		BaseResponse response = serviceNotif.sendAll(request);
 		return response;
