@@ -1,6 +1,7 @@
 package com.siemo.notif.system.service;
 
 import com.siemo.notif.system.message.BaseResponse;
+import com.siemo.notif.system.message.CredentialUserResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
 import com.siemo.notif.system.message.ManageDataUserRequest;
@@ -23,4 +24,5 @@ public interface ServiceNotif {
 	public BaseResponse sendAll(SendAllRequest request);
 	
 	public BaseResponse sendGroup(SendGroupRequest request);
+	
 }

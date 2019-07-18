@@ -25,18 +25,24 @@ import com.siemo.notif.system.message.BaseResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
 import com.siemo.notif.system.message.ManageDataUserRequest;
+import com.siemo.notif.system.message.SaveAuthRequest;
 import com.siemo.notif.system.message.BatchMessage;
 import com.siemo.notif.system.message.BatchRecipients;
+import com.siemo.notif.system.message.CredentialUserResponse;
 import com.siemo.notif.system.message.SaveRequest;
 import com.siemo.notif.system.message.SendAllRequest;
 import com.siemo.notif.system.message.SendBatchRequest;
 import com.siemo.notif.system.message.SendBatchResponse;
 import com.siemo.notif.system.message.SendGroupRequest;
 import com.siemo.notif.system.message.SendOneRequest;
+import com.siemo.notif.system.model.CredentialToken;
+import com.siemo.notif.system.model.CredentialUser;
 import com.siemo.notif.system.model.Group;
 import com.siemo.notif.system.model.HistoryNotificationExecution;
 import com.siemo.notif.system.model.HistoryNotificationExecution.action;
 import com.siemo.notif.system.model.MasterData;
+import com.siemo.notif.system.repository.RepositoryAuthToken;
+import com.siemo.notif.system.repository.RepositoryAuthUser;
 import com.siemo.notif.system.repository.RepositoryGroup;
 import com.siemo.notif.system.repository.RepositoryHistory;
 import com.siemo.notif.system.repository.RepositoryNotif;
@@ -71,13 +77,33 @@ public class ServiceNotifImpl implements ServiceNotif {
 	
 	@Autowired
 	private RepositoryHistory repositoryHistory;
+	
+	@Autowired
+	private RepositoryAuthToken repositoryAuthToken;
+	
+	@Autowired
+	private RepositoryAuthUser repositoryAuthUser;
 
+
+	
 	@Override
 	public BaseResponse saveData(SaveRequest request) {
 		Group idGroup = repositoryGroup.findByCategoryAndDetail(request.getCategory(), request.getDetail());
 		Date time = new Date();
+		
 		MasterData masterData = new MasterData(request.getUserId(), request.getTokenDevice(), request.getChannel(), request.getStatus(), request.getVersi(), idGroup, time);
 		masterData = repositoryNotif.save(masterData);
+		
+		CredentialToken authToken = new CredentialToken();
+		authToken.setUserId(request.getUserId());
+		authToken = repositoryAuthToken.save(authToken);
+		
+		CredentialUser authUser = new CredentialUser();
+		authUser.setUserId(request.getUserId());
+		authUser.setPassword("12345");
+		authUser.setRole("USER");
+		authUser = repositoryAuthUser.save(authUser);
+		
 		BaseResponse response = new BaseResponse();
 		response.setMessage("simpan");
 		response.setStatus("berhasil");
