@@ -1,9 +1,14 @@
 package com.siemo.notif.system.controller;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -58,15 +63,11 @@ public class ControllerNotif {
 	}
 	
 	@RequestMapping("send/one/customer")
-	public BaseResponse sendOne(ServletRequest requestz, HttpServletRequest requests, @RequestBody SendOneRequest request) {
+	public BaseResponse sendOne(HttpServletRequest requests, @RequestBody SendOneRequest request) {
 		BaseResponse response = serviceNotif.sendOne(request);
-		HttpServletRequest httpRequest = (HttpServletRequest) requestz;
-		String headerNames = httpRequest.getHeader("Authorization");
-        System.out.println("AUTHORI = "+headerNames);
 		
-//		Enumeration headerNames = requests.getHeaders("Authorization");
-//            String key = (String) headerNames.nextElement();
-//            System.out.println(key);
+        String headerNames = requests.getHeader("token");           
+        System.out.println("TOKEN DARI CONTROLLER = "+headerNames);
 		return response;
 	}
 
