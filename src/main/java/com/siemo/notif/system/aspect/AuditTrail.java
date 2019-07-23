@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Before;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -31,23 +32,34 @@ public class AuditTrail {
 	org.slf4j.Logger LOG_CONTROLLER = LoggerFactory.getLogger("auditController");
 	org.slf4j.Logger LOG_SERVICE = LoggerFactory.getLogger("auditService");
 	
-
+	
+	String token, userId;
+		
+		
 	    @Before("execution(* com.siemo.notif.system.controller.*.*(..))")
 	    public void before(JoinPoint joinPoint) {
 	    	LOG_CONTROLLER.info("before method" + joinPoint.getSignature().getName() + "Class" 
 	    						+ joinPoint.getTarget().getClass().getSimpleName());
 	    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-	        String token = request.getHeader("token");
-	    	String userId = request.getHeader("user");
-	    	
-	    	CredentialToken data = repositoryAuth.findByUserId(userId);
+	         this.token = request.getHeader("token");
+	    	 this.userId = request.getHeader("user");
+	    }
+		
+	    @Cacheable("token")
+		public String getToken() {
+			String response;
+			CredentialToken data = repositoryAuth.findByUserId(userId);
 	    	if(token.equals(data.getToken())) {
+	    		 response = "true";
 	    		System.out.println("TRUE");
 	    	}
 	    	else {
+	    		 response = "false";
 	    		System.out.println("FALSE");
 	    	}
-	    }
+	    	return response;
+		}
+		
 	    
 	    @AfterReturning(pointcut = "(execution(* com.siemo.notif.system.controller.*.*(..))) && args(request)", returning = "result")
 	    public void afterReturning(JoinPoint joinPoint, Object request, Object result) throws IOException {

@@ -63,11 +63,10 @@ public class ControllerNotif {
 	}
 	
 	@RequestMapping("send/one/customer")
-	public BaseResponse sendOne(HttpServletRequest requests, @RequestBody SendOneRequest request) {
+	public BaseResponse sendOne(@RequestBody SendOneRequest request) {
 		BaseResponse response = serviceNotif.sendOne(request);
-		
-        String headerNames = requests.getHeader("token");           
-        System.out.println("TOKEN DARI CONTROLLER = "+headerNames);
+//        String headerNames = requests.getHeader("token");           
+//        System.out.println("TOKEN DARI CONTROLLER = "+headerNames);
 		return response;
 	}
 

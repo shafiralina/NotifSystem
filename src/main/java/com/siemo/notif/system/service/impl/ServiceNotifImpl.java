@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.siemo.notif.system.aspect.AuditTrail;
 import com.siemo.notif.system.base.service.BaseBackendService;
 import com.siemo.notif.system.base.util.service.RestUtil;
 import com.siemo.notif.system.message.BaseResponse;
@@ -68,6 +69,9 @@ public class ServiceNotifImpl implements ServiceNotif {
 
 	@Autowired
 	private RestUtil restUtil;
+	
+	@Autowired
+	private AuditTrail audit;
 
 	@Autowired
 	private RepositoryNotif repositoryNotif;
@@ -134,14 +138,15 @@ public class ServiceNotifImpl implements ServiceNotif {
 		data.setUpdateDated(date);
 		data = repositoryNotif.save(data);
 		BaseResponse response = new BaseResponse();
-		response.setMessage("update");
-		response.setStatus("berhasil");
+		response.setMessage("Update");
+		response.setStatus("Berhasil");
 		return response;
 	}
 
 	@Override
 	public BaseResponse sendOne(SendOneRequest request) {
 		BaseResponse response = new BaseResponse();
+		if(audit.getToken().equals("true")) {
 		String uri = env.getProperty("batch.send.notification");
 		String inqUri = restUtil.generateURI(uri);
 		
@@ -216,8 +221,14 @@ public class ServiceNotifImpl implements ServiceNotif {
 		Date date = new Date();
 		HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ONE.toString(), date, reqHistory, resHistory, listMasterDataId, response.getStatus());
 		history = repositoryHistory.save(history);
-		
+		}
+		else {
+			response.setStatus("Gagal");
+			response.setMessage("Token Salah");
+		}
 		return response;
+		
+		
 	}
 
 
