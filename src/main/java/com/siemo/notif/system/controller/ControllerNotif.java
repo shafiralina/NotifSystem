@@ -31,14 +31,13 @@ import com.siemo.notif.system.message.SendOneRequest;
 import com.siemo.notif.system.service.ServiceNotif;
 
 @RestController
-//@RequestMapping(value = "api/notifsystem")
 public class ControllerNotif {
 
 	@Autowired
 	private ServiceNotif serviceNotif;
 	
 	
-	@PostMapping("/api/notifsystem/save/device")
+	@PostMapping("/save/device")
 	public BaseResponse saveData(@RequestBody SaveRequest request) {
 		BaseResponse response = serviceNotif.saveData(request);
 		return response;

@@ -117,29 +117,44 @@ public class ServiceNotifImpl implements ServiceNotif {
 	@Override
 	public GetAllDataResponse getAllData() {
 		GetAllDataResponse response = new GetAllDataResponse();
+		if(audit.getToken().equals("true")) {
 		List<MasterData> listData = (List<MasterData>) repositoryNotif.findAll();
 		response.setListData(listData);
+		} else {
+			response.setStatus("Gagal");
+			response.setMessage("Token salah");
+		}
 		return response;
 	}
 
 	@Override
 	public GetAllDataResponse getData(GetDataRequest request) {
 		GetAllDataResponse response = new GetAllDataResponse();
+		if(audit.getToken().equals("true")) {
 		List<MasterData> listData = repositoryNotif.findByUserId(request.getUserId());
 		response.setListData(listData);
+		} else {
+			response.setStatus("Gagal");
+			response.setMessage("Token salah");
+		}
 		return response;
 	}
 	
 	@Override
 	public BaseResponse manageDataUser(ManageDataUserRequest request) {
+		BaseResponse response = new BaseResponse();
+		if(audit.getToken().equals("true")) {
 		Date date = new Date();
 		MasterData data = repositoryNotif.findAllById(request.getMasterDataId());
 		data.setStatus(request.getStatus());
 		data.setUpdateDated(date);
 		data = repositoryNotif.save(data);
-		BaseResponse response = new BaseResponse();
 		response.setMessage("Update");
 		response.setStatus("Berhasil");
+		} else {
+			response.setStatus("Gagal");
+			response.setMessage("Token salah");
+		}
 		return response;
 	}
 
@@ -235,6 +250,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 	@Override
 	public BaseResponse sendAll(SendAllRequest request) {
 		BaseResponse response = new BaseResponse();
+		if(audit.getToken().equals("true")) {
 		String uri = env.getProperty("batch.send.notification");
 		String inqUri = restUtil.generateURI(uri);
 		
@@ -308,7 +324,10 @@ public class ServiceNotifImpl implements ServiceNotif {
 		Date date = new Date();
 		HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ALL.toString(), date, reqHistory, resHistory, listMasterDataId, response.getStatus());
 		history = repositoryHistory.save(history);
-		
+		} else {
+			response.setStatus("Gagal");
+			response.setMessage("Token Salah");
+		}
 		return response;
 	}
 	
@@ -317,8 +336,9 @@ public class ServiceNotifImpl implements ServiceNotif {
 	public BaseResponse sendGroup(SendGroupRequest request) {
 		String category = null;
 		String detail = null;
-		
+
 		BaseResponse response = new BaseResponse();
+		if(audit.getToken().equals("true")) {
 		String uri = env.getProperty("batch.send.notification");
 		String inqUri = restUtil.generateURI(uri);
 		
@@ -426,9 +446,13 @@ public class ServiceNotifImpl implements ServiceNotif {
 				Date date = new Date();
 				HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_GROUP.toString(), date, reqHistory, resHistory, listMasterDataId.toString(), response.getStatus());
 				history = repositoryHistory.save(history);
-				
+		} else {
+			response.setStatus("Gagal");
+			response.setMessage("Token Salah");
+		}	
 				
 		return response;
 	}
+	
 
 }

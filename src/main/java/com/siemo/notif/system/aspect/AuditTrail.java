@@ -41,8 +41,8 @@ public class AuditTrail {
 	    	LOG_CONTROLLER.info("before method" + joinPoint.getSignature().getName() + "Class" 
 	    						+ joinPoint.getTarget().getClass().getSimpleName());
 	    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-	         this.token = request.getHeader("token");
-	    	 this.userId = request.getHeader("user");
+	    	this.token = request.getHeader("token_addr");
+	    	this.userId = request.getHeader("user_addr");
 	    }
 		
 	    @Cacheable("token")
@@ -68,7 +68,6 @@ public class AuditTrail {
 	    String req = objectWriter.writeValueAsString(request);
 	    String res = objectWriter.writeValueAsString(result);
 	    
-//	    System.out.println("ini token = " + requests.getHeader("token"));
 	    System.out.println(req);
 	    System.out.println(res);
 	    }
