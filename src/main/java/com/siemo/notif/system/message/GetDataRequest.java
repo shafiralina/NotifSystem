@@ -10,5 +10,5 @@ public class GetDataRequest {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	
+
 }

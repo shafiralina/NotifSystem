@@ -27,6 +27,7 @@ public class ServiceAuthImpl {
 		return response;
 	}
 	
+	//save token to CredentialToken
 	public String saveAuth(String userId, String token) {
 		CredentialToken data = repositoryAuthToken.findByUserId(userId);
 		data.setToken(token);

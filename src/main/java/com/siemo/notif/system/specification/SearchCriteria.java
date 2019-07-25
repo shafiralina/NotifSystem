@@ -5,7 +5,6 @@ public class SearchCriteria {
 	private String operation;
 	private Object value;
 
-	
 	public SearchCriteria(String key, String operation, Object value) {
 		super();
 		this.key = key;

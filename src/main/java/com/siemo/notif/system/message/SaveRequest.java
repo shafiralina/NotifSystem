@@ -1,6 +1,5 @@
 package com.siemo.notif.system.message;
 
-
 public class SaveRequest {
 	public String userId;
 	public String tokenDevice;

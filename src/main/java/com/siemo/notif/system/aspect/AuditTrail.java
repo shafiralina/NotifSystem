@@ -1,5 +1,6 @@
 package com.siemo.notif.system.aspect;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.siemo.notif.system.model.CredentialToken;
@@ -37,27 +39,24 @@ public class AuditTrail {
 		
 		
 	    @Before("execution(* com.siemo.notif.system.controller.*.*(..))")
-	    public void before(JoinPoint joinPoint) {
+	    public void before(JoinPoint joinPoint){
 	    	LOG_CONTROLLER.info("before method" + joinPoint.getSignature().getName() + "Class" 
 	    						+ joinPoint.getTarget().getClass().getSimpleName());
 	    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-	    	this.token = request.getHeader("token_addr");
-	    	this.userId = request.getHeader("user_addr");
+	    	this.token = request.getHeader("token_addr"); //get token for interceptor
+	    	this.userId = request.getHeader("user_addr"); //get userId for interceptor
 	    }
 		
+	    // INTERCEPTOR
 	    @Cacheable("token")
-		public String getToken() {
-			String response;
+		public boolean getToken() {
 			CredentialToken data = repositoryAuth.findByUserId(userId);
 	    	if(token.equals(data.getToken())) {
-	    		 response = "true";
-	    		System.out.println("TRUE");
+	    		 return true;
 	    	}
 	    	else {
-	    		 response = "false";
-	    		System.out.println("FALSE");
+	    		 return false;
 	    	}
-	    	return response;
 		}
 		
 	    

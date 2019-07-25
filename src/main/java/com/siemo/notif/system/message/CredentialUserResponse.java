@@ -15,6 +15,4 @@ public class CredentialUserResponse {
 		this.data = data;
 	}
 
-
-	
 }

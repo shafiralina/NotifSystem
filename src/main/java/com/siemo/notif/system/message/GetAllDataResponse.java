@@ -14,6 +14,5 @@ public class GetAllDataResponse extends BaseResponse {
 	public void setListData(List<MasterData> listData) {
 		this.listData = listData;
 	}
-	
-	
+
 }
