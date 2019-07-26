@@ -13,7 +13,7 @@ import com.siemo.notif.system.message.SendOneRequest;
 public interface ServiceNotif {
 	public BaseResponse saveData(SaveRequest request);
 
-	public GetAllDataResponse getAllData();
+	public GetAllDataResponse getAllData(GetDataRequest request);
 
 	public GetAllDataResponse getData(GetDataRequest request);
 	

@@ -111,7 +111,7 @@ public class ServiceNotifImpl implements ServiceNotif {
 
 	// GET ALL DATA FROM DATABASE
 	@Override
-	public GetAllDataResponse getAllData() {
+	public GetAllDataResponse getAllData(GetDataRequest request) {
 		GetAllDataResponse response = new GetAllDataResponse();
 
 		if (audit.getToken()) { // interceptor

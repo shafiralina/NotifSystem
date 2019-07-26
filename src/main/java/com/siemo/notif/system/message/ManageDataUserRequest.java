@@ -3,6 +3,7 @@ package com.siemo.notif.system.message;
 public class ManageDataUserRequest {
 	private String status;
 	private String masterDataId;
+	private String userId;
 
 	public String getStatus() {
 		return status;
@@ -18,6 +19,14 @@ public class ManageDataUserRequest {
 
 	public void setMasterDataId(String masterDataId) {
 		this.masterDataId = masterDataId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 }

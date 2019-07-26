@@ -4,6 +4,7 @@ import java.util.Map;
 
 public class SendGroupRequest {
 	private String body;
+	private String userId;
 	private Map<String, Object> group;
 
 	public String getBody() {
@@ -20,6 +21,14 @@ public class SendGroupRequest {
 
 	public void setGroup(Map<String, Object> group) {
 		this.group = group;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 }

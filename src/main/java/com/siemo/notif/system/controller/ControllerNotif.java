@@ -32,9 +32,9 @@ public class ControllerNotif {
 		return response;
 	}
 
-	@GetMapping("get/all/data")
-	public GetAllDataResponse getAllData() {
-		GetAllDataResponse response = serviceNotif.getAllData();
+	@PostMapping("get/all/data")
+	public GetAllDataResponse getAllData(@RequestBody GetDataRequest request) {
+		GetAllDataResponse response = serviceNotif.getAllData(request);
 		return response;
 	}
 
