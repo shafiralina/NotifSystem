@@ -236,14 +236,11 @@ public class ServiceNotifImpl implements ServiceNotif {
 			HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ONE.toString(), date,
 					reqHistory, resHistory, listMasterDataId, response.getStatus());
 			history = repositoryHistory.save(history);
-		}
-
-		else {
+		} else {
 			response.setStatus("Gagal");
 			response.setMessage("Token Salah");
 		}
 		return response;
-
 	}
 
 	// SNED ALL CUSTOMER NOTIFICATION
