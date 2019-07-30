@@ -1,16 +1,9 @@
 package com.siemo.notif.system.message;
 
 public class BaseResponse {
-	private String status;
+	private String rc;
 	private String message;
 
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
 
 	public String getMessage() {
 		return message;
@@ -18,6 +11,14 @@ public class BaseResponse {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getRc() {
+		return rc;
+	}
+
+	public void setRc(String rc) {
+		this.rc = rc;
 	}
 
 }

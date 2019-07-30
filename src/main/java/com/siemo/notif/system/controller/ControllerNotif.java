@@ -13,10 +13,12 @@ import com.siemo.notif.system.message.BaseResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
 import com.siemo.notif.system.message.ManageDataUserRequest;
+import com.siemo.notif.system.message.ManageDataUserResponse;
 import com.siemo.notif.system.message.SaveRequest;
 import com.siemo.notif.system.message.SendAllRequest;
 import com.siemo.notif.system.message.SendGroupRequest;
 import com.siemo.notif.system.message.SendOneRequest;
+import com.siemo.notif.system.message.SendResponse;
 import com.siemo.notif.system.service.ServiceNotif;
 
 @RestController
@@ -45,26 +47,26 @@ public class ControllerNotif {
 	}
 	
 	@RequestMapping("update/device")
-	public BaseResponse manageDataUser(@RequestBody ManageDataUserRequest request) {
-		BaseResponse response = serviceNotif.manageDataUser(request);
+	public ManageDataUserResponse manageDataUser(@RequestBody ManageDataUserRequest request) {
+		ManageDataUserResponse response = serviceNotif.manageDataUser(request);
 		return response;
 	}
 	
 	@RequestMapping("send/one/customer")
-	public BaseResponse sendOne(@RequestBody SendOneRequest request) {
-		BaseResponse response = serviceNotif.sendOne(request);
+	public SendResponse sendOne(@RequestBody SendOneRequest request) {
+		SendResponse response = serviceNotif.sendOne(request);
 		return response;
 	}
 
 	@RequestMapping("send/group/customer")
-	public BaseResponse sendGroup(@RequestBody SendGroupRequest request) {
-		BaseResponse response = serviceNotif.sendGroup(request);
+	public SendResponse sendGroup(@RequestBody SendGroupRequest request) {
+		SendResponse response = serviceNotif.sendGroup(request);
 		return response;
 	}
 
 	@RequestMapping("send/all/customer")
-	public BaseResponse sendAll(@RequestBody SendAllRequest request) {
-		BaseResponse response = serviceNotif.sendAll(request);
+	public SendResponse sendAll(@RequestBody SendAllRequest request) {
+		SendResponse response = serviceNotif.sendAll(request);
 		return response;
 	}
 

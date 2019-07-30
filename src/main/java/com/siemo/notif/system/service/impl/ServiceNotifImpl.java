@@ -23,6 +23,8 @@ import com.siemo.notif.system.message.BaseResponse;
 import com.siemo.notif.system.message.GetAllDataResponse;
 import com.siemo.notif.system.message.GetDataRequest;
 import com.siemo.notif.system.message.ManageDataUserRequest;
+import com.siemo.notif.system.message.ManageDataUserResponse;
+import com.siemo.notif.system.message.ResponseCode;
 import com.siemo.notif.system.message.BatchMessage;
 import com.siemo.notif.system.message.BatchRecipients;
 import com.siemo.notif.system.message.SaveRequest;
@@ -31,6 +33,7 @@ import com.siemo.notif.system.message.SendBatchRequest;
 import com.siemo.notif.system.message.SendBatchResponse;
 import com.siemo.notif.system.message.SendGroupRequest;
 import com.siemo.notif.system.message.SendOneRequest;
+import com.siemo.notif.system.message.SendResponse;
 import com.siemo.notif.system.model.CredentialToken;
 import com.siemo.notif.system.model.CredentialUser;
 import com.siemo.notif.system.model.Group;
@@ -104,8 +107,8 @@ public class ServiceNotifImpl implements ServiceNotif {
 		authUser = repositoryAuthUser.save(authUser);
 
 		BaseResponse response = new BaseResponse();
-		response.setMessage("simpan");
-		response.setStatus("berhasil");
+		response.setRc(ResponseCode.VALID_RESPONSE);
+		response.setMessage("Success");
 		return response;
 	}
 
@@ -116,10 +119,12 @@ public class ServiceNotifImpl implements ServiceNotif {
 
 		if (audit.getToken()) { // interceptor
 			List<MasterData> listData = (List<MasterData>) repositoryNotif.findAll();
+			response.setRc(ResponseCode.VALID_RESPONSE);
+			response.setMessage("Success");
 			response.setListData(listData);
 		} else {
-			response.setStatus("Gagal");
-			response.setMessage("Token salah");
+			response.setRc(ResponseCode.WRONG_TOKEN);
+			response.setMessage("Wrong Token");
 		}
 		return response;
 	}
@@ -131,18 +136,20 @@ public class ServiceNotifImpl implements ServiceNotif {
 
 		if (audit.getToken()) { // interceptor
 			List<MasterData> listData = repositoryNotif.findByUserId(request.getUserId());
+			response.setRc(ResponseCode.VALID_RESPONSE);
+			response.setMessage("Success");
 			response.setListData(listData);
 		} else {
-			response.setStatus("Gagal");
-			response.setMessage("Token salah");
+			response.setRc(ResponseCode.WRONG_TOKEN);
+			response.setMessage("Wrong Token");
 		}
 		return response;
 	}
 
 	// UPDATE DATA IN DATABASE
 	@Override
-	public BaseResponse manageDataUser(ManageDataUserRequest request) {
-		BaseResponse response = new BaseResponse();
+	public ManageDataUserResponse manageDataUser(ManageDataUserRequest request) {
+		ManageDataUserResponse response = new ManageDataUserResponse();
 
 		if (audit.getToken()) { // interceptor
 			Date date = new Date();
@@ -150,19 +157,19 @@ public class ServiceNotifImpl implements ServiceNotif {
 			data.setStatus(request.getStatus());
 			data.setUpdateDated(date);
 			data = repositoryNotif.save(data);
-			response.setMessage("Update");
-			response.setStatus("Berhasil");
+			response.setRc(ResponseCode.VALID_RESPONSE);
+			response.setMessage("Success");
 		} else {
-			response.setStatus("Gagal");
-			response.setMessage("Token salah");
+			response.setRc(ResponseCode.WRONG_TOKEN);
+			response.setMessage("Wrong Token");
 		}
 		return response;
 	}
 
 	// SEND ONE CUSTOMER NOTIFICATION
 	@Override
-	public BaseResponse sendOne(SendOneRequest request) {
-		BaseResponse response = new BaseResponse();
+	public SendResponse sendOne(SendOneRequest request) {
+		SendResponse response = new SendResponse();
 
 		if (audit.getToken()==true) { // interceptor
 			String uri = env.getProperty("batch.send.notification");
@@ -202,8 +209,9 @@ public class ServiceNotifImpl implements ServiceNotif {
 					SendBatchResponse.class);
 			HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
 			SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
-			response.setStatus("Berhasil");
-			response.setMessage("Token: " + bodyBatchResponse.getToken());
+			response.setRc(ResponseCode.VALID_RESPONSE);
+			response.setMessage("Success");
+			response.setToken(bodyBatchResponse.getToken());
 
 			// Prepare for HistoryNotificationExecution storage
 			List<String> listId = new ArrayList<>();
@@ -234,19 +242,19 @@ public class ServiceNotifImpl implements ServiceNotif {
 
 			Date date = new Date();
 			HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ONE.toString(), date,
-					reqHistory, resHistory, listMasterDataId, response.getStatus());
+					reqHistory, resHistory, listMasterDataId, response.getRc());
 			history = repositoryHistory.save(history);
 		} else {
-			response.setStatus("Gagal");
-			response.setMessage("Token Salah");
+			response.setRc(ResponseCode.WRONG_TOKEN);
+			response.setMessage("Wrong Token");
 		}
 		return response;
 	}
 
 	// SNED ALL CUSTOMER NOTIFICATION
 	@Override
-	public BaseResponse sendAll(SendAllRequest request) {
-		BaseResponse response = new BaseResponse();
+	public SendResponse sendAll(SendAllRequest request) {
+		SendResponse response = new SendResponse();
 
 		if (audit.getToken()==true) { // interceptor
 			String uri = env.getProperty("batch.send.notification");
@@ -286,8 +294,9 @@ public class ServiceNotifImpl implements ServiceNotif {
 					SendBatchResponse.class);
 			HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
 			SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
-			response.setStatus("Berhasil");
-			response.setMessage("Token: " + bodyBatchResponse.getToken());
+			response.setRc(ResponseCode.VALID_RESPONSE);
+			response.setMessage("Success");
+			response.setToken(bodyBatchResponse.getToken());
 
 			// Prepare for HistoryNotificationExecution storage
 			ObjectMapper mapper = new ObjectMapper();
@@ -317,19 +326,19 @@ public class ServiceNotifImpl implements ServiceNotif {
 
 			Date date = new Date();
 			HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_ALL.toString(), date,
-					reqHistory, resHistory, listMasterDataId, response.getStatus());
+					reqHistory, resHistory, listMasterDataId, response.getRc());
 			history = repositoryHistory.save(history);
 		} else {
-			response.setStatus("Gagal");
-			response.setMessage("Token Salah");
+			response.setRc(ResponseCode.WRONG_TOKEN);
+			response.setMessage("Wrong Token");
 		}
 		return response;
 	}
 
 	// SEND GROUP CUSTOMER NOTIFICATION
 	@Override
-	public BaseResponse sendGroup(SendGroupRequest request) {
-		BaseResponse response = new BaseResponse();
+	public SendResponse sendGroup(SendGroupRequest request) {
+		SendResponse response = new SendResponse();
 
 		if (audit.getToken()) { // interceptor
 			String uri = env.getProperty("batch.send.notification");
@@ -401,8 +410,9 @@ public class ServiceNotifImpl implements ServiceNotif {
 					SendBatchResponse.class);
 			HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
 			SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
-			response.setStatus("Berhasil");
-			response.setMessage("Token: " + bodyBatchResponse.getToken());
+			response.setRc(ResponseCode.VALID_RESPONSE);
+			response.setMessage("Success");
+			response.setToken(bodyBatchResponse.getToken());
 
 			// Prepare for HistoryNotificationExecution storage
 			ObjectMapper mapper = new ObjectMapper();
@@ -436,11 +446,11 @@ public class ServiceNotifImpl implements ServiceNotif {
 			}
 			Date date = new Date();
 			HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_GROUP.toString(), date,
-					reqHistory, resHistory, listMasterDataId.toString(), response.getStatus());
+					reqHistory, resHistory, listMasterDataId.toString(), response.getRc());
 			history = repositoryHistory.save(history);
 		} else {
-			response.setStatus("Gagal");
-			response.setMessage("Token Salah");
+			response.setRc(ResponseCode.WRONG_TOKEN);
+			response.setMessage("Wrong Token");
 		}
 
 		return response;
