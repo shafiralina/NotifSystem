@@ -25,7 +25,7 @@ public class BasicAuthInterceptor implements ClientHttpRequestInterceptor {
 		HttpHeaders headers = httpRequest.getHeaders();
 		headers.add(HttpHeaders.AUTHORIZATION, encodeCredentialsForBasicAuth(username, password));
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("X-Authorization", "c7dea6d74f740f40d95d9a5047eec69f"); //REST API BATCH
+		headers.set("X-Authorization", "2fced45abfd67f398e8bd2400c46df64"); //REST API BATCH
 		headers.add("User-Agent", "BatchPushSender 1.0");
 		return clientHttpRequestExecution.execute(httpRequest, bytes);
 		//punya shafira c7dea6d74f740f40d95d9a5047eec69f

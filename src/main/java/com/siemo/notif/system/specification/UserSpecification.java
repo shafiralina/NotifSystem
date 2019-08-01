@@ -8,7 +8,6 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.siemo.notif.system.model.Group;
-import com.siemo.notif.system.model.MasterData;
 
 public class UserSpecification implements Specification<Group> {
 	 private SearchCriteria criteria;
