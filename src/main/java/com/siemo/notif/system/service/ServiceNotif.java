@@ -22,5 +22,5 @@ public interface ServiceNotif {
 
 	public BaseResponse sendAll(SendAllRequest request);
 	
-	public BaseResponse sendGroup(SendGroupRequest request);
+//	public BaseResponse sendGroup(SendGroupRequest request);
 }

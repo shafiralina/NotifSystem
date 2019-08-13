@@ -290,122 +290,122 @@ public class ServiceNotifImpl extends DbSeeder implements ServiceNotif {
 	}
 	
 	
-	@Override
-	public BaseResponse sendGroup(SendGroupRequest request) {
-		String category = null;
-		String detail = null;
-		
-		BaseResponse response = new BaseResponse();
-		String uri = env.getProperty("batch.send.notification");
-		String inqUri = restUtil.generateURI(uri);
-		
-		SendBatchRequest inqRequest = new SendBatchRequest();
-		BatchMessage body = new BatchMessage();
-		body.setBody(request.getBody());
-		
-		//specification or criteria
-		if (request.getGroup().containsKey("category")==false && request.getGroup().containsKey("detail")==true ) {
-			 category = "";
-			 detail = request.getGroup().get("detail").toString();
-		} else if(request.getGroup().containsKey("category")==true && request.getGroup().containsKey("detail")==false) {
-			category = request.getGroup().get("category").toString();
-			detail = "";
-		} else if(request.getGroup().containsKey("category")==false && request.getGroup().containsKey("detail")==false) {
-			category ="";
-			detail = "";
-		} else {
-			category = request.getGroup().get("category").toString();
-			detail = request.getGroup().get("detail").toString();
-		}
-		
-		UserSpecification spec1 = 
-			      new UserSpecification(new SearchCriteria("category", ":", category));
-			    UserSpecification spec2 = 
-			      new UserSpecification(new SearchCriteria("detail", ":", detail));
-			    
-			    List<Group> results = repositoryGroup.findAll(Specification.where(spec1).and(spec2));
-			    
-			    List<MasterData> listId = null;
-			    List<MasterData> listCollect = new ArrayList<MasterData>();
-			    for(int i=0; i < results.size(); i++) {
-			    	String id = results.get(i).getId();
-			    	listId = repositoryNotif.findTokensByGroupId(id);
-			    	listCollect.addAll(listId);
-			    }
-	
-			    ArrayList<String> listToken = new ArrayList<>();
-				for (int i = 0; i < listCollect.size(); i++) {
-					MasterData data = listCollect.get(i);
-					if(data.getStatus().equals("ACTIVE")) {
-					listToken.add(listCollect.get(i).getTokenDevice());
-					}
-				}
-				BatchRecipients data = new BatchRecipients();
-				data.setTokens(listToken);
-		
-				
-		String groupID = env.getProperty("batch.group.id");
-		String custom = env.getProperty("batch.custom.payload");
-		String deeplink = env.getProperty("batch.deeplink");
-		String pushtime = env.getProperty("batch.push.time");
-		String sandbox = env.getProperty("batch.sandbox");
-		boolean sand = Boolean.valueOf(sandbox);
-		
-		inqRequest.setRecipients(data);
-		inqRequest.setGroup_id(groupID);
-		inqRequest.setCustom_payload(custom);
-		inqRequest.setDeeplink(deeplink);
-		inqRequest.setMessage(body);
-		inqRequest.setPush_time(pushtime);
-		inqRequest.setSandbox(sand);
-		
-		ResponseEntity<SendBatchResponse> inqBatch_response = batchrest.postForEntity(inqUri, inqRequest,
-				SendBatchResponse.class);
-		HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
-		SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
-			response.setStatus("Berhasil");
-			response.setMessage("Token: "+bodyBatchResponse.getToken());
-		
-		//Prepare for HistoryNotificationExecution storage
-		
-				ObjectMapper mapper = new ObjectMapper();
-				String reqHistory = null;
-				try {
-					reqHistory = mapper.writeValueAsString(inqRequest);
-				} catch (JsonProcessingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				String resHistory = null;
-				try {
-					resHistory = mapper.writeValueAsString(bodyBatchResponse);
-				} catch (JsonProcessingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	
-				List<MasterData> listMDId = null;
-			    List<MasterData> listCollectMDId = new ArrayList<MasterData>();
-			    for(int i=0; i < results.size(); i++) {
-			    	String Id = results.get(i).getId();
-			    	listMDId = repositoryNotif.findMasterDataIdByGroupId(Id);
-			    	listCollectMDId.addAll(listMDId);
-			    }
-	
-			    List<String> listMasterDataId = new ArrayList<>();
-				for (int i = 0; i < listCollect.size(); i++) {
-					MasterData dataMD = listCollect.get(i);
-					if(dataMD.getStatus().equals("ACTIVE")) {
-					listMasterDataId.add(listCollectMDId.get(i).getId());
-					}
-				}
-				
-				Date date = new Date();
-				HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_GROUP.toString(), date, reqHistory, resHistory, listMasterDataId.toString(), response.getStatus());
-				history = repositoryHistory.save(history);
-				
-				
-		return response;
-	}
+//	@Override
+//	public BaseResponse sendGroup(SendGroupRequest request) {
+//		String category = null;
+//		String detail = null;
+//		
+//		BaseResponse response = new BaseResponse();
+//		String uri = env.getProperty("batch.send.notification");
+//		String inqUri = restUtil.generateURI(uri);
+//		
+//		SendBatchRequest inqRequest = new SendBatchRequest();
+//		BatchMessage body = new BatchMessage();
+//		body.setBody(request.getBody());
+//		
+//		//specification or criteria
+//		if (request.getGroup().containsKey("category")==false && request.getGroup().containsKey("detail")==true ) {
+//			 category = "";
+//			 detail = request.getGroup().get("detail").toString();
+//		} else if(request.getGroup().containsKey("category")==true && request.getGroup().containsKey("detail")==false) {
+//			category = request.getGroup().get("category").toString();
+//			detail = "";
+//		} else if(request.getGroup().containsKey("category")==false && request.getGroup().containsKey("detail")==false) {
+//			category ="";
+//			detail = "";
+//		} else {
+//			category = request.getGroup().get("category").toString();
+//			detail = request.getGroup().get("detail").toString();
+//		}
+//		
+//		UserSpecification spec1 = 
+//			      new UserSpecification(new SearchCriteria("category", ":", category));
+//			    UserSpecification spec2 = 
+//			      new UserSpecification(new SearchCriteria("detail", ":", detail));
+//			    
+//			    List<Group> results = repositoryGroup.findAll(Specification.where(spec1).and(spec2));
+//			    
+//			    List<MasterData> listId = null;
+//			    List<MasterData> listCollect = new ArrayList<MasterData>();
+//			    for(int i=0; i < results.size(); i++) {
+//			    	String id = results.get(i).getId();
+//			    	listId = repositoryNotif.findTokensByGroupId(id);
+//			    	listCollect.addAll(listId);
+//			    }
+//	
+//			    ArrayList<String> listToken = new ArrayList<>();
+//				for (int i = 0; i < listCollect.size(); i++) {
+//					MasterData data = listCollect.get(i);
+//					if(data.getStatus().equals("ACTIVE")) {
+//					listToken.add(listCollect.get(i).getTokenDevice());
+//					}
+//				}
+//				BatchRecipients data = new BatchRecipients();
+//				data.setTokens(listToken);
+//		
+//				
+//		String groupID = env.getProperty("batch.group.id");
+//		String custom = env.getProperty("batch.custom.payload");
+//		String deeplink = env.getProperty("batch.deeplink");
+//		String pushtime = env.getProperty("batch.push.time");
+//		String sandbox = env.getProperty("batch.sandbox");
+//		boolean sand = Boolean.valueOf(sandbox);
+//		
+//		inqRequest.setRecipients(data);
+//		inqRequest.setGroup_id(groupID);
+//		inqRequest.setCustom_payload(custom);
+//		inqRequest.setDeeplink(deeplink);
+//		inqRequest.setMessage(body);
+//		inqRequest.setPush_time(pushtime);
+//		inqRequest.setSandbox(sand);
+//		
+//		ResponseEntity<SendBatchResponse> inqBatch_response = batchrest.postForEntity(inqUri, inqRequest,
+//				SendBatchResponse.class);
+//		HttpStatus inqHttpStatus = inqBatch_response.getStatusCode();
+//		SendBatchResponse bodyBatchResponse = inqBatch_response.getBody();
+//			response.setStatus("Berhasil");
+//			response.setMessage("Token: "+bodyBatchResponse.getToken());
+//		
+//		//Prepare for HistoryNotificationExecution storage
+//		
+//				ObjectMapper mapper = new ObjectMapper();
+//				String reqHistory = null;
+//				try {
+//					reqHistory = mapper.writeValueAsString(inqRequest);
+//				} catch (JsonProcessingException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				String resHistory = null;
+//				try {
+//					resHistory = mapper.writeValueAsString(bodyBatchResponse);
+//				} catch (JsonProcessingException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//	
+//				List<MasterData> listMDId = null;
+//			    List<MasterData> listCollectMDId = new ArrayList<MasterData>();
+//			    for(int i=0; i < results.size(); i++) {
+//			    	String Id = results.get(i).getId();
+//			    	listMDId = repositoryNotif.findMasterDataIdByGroupId(Id);
+//			    	listCollectMDId.addAll(listMDId);
+//			    }
+//	
+//			    List<String> listMasterDataId = new ArrayList<>();
+//				for (int i = 0; i < listCollect.size(); i++) {
+//					MasterData dataMD = listCollect.get(i);
+//					if(dataMD.getStatus().equals("ACTIVE")) {
+//					listMasterDataId.add(listCollectMDId.get(i).getId());
+//					}
+//				}
+//				
+//				Date date = new Date();
+//				HistoryNotificationExecution history = new HistoryNotificationExecution(action.SEND_GROUP.toString(), date, reqHistory, resHistory, listMasterDataId.toString(), response.getStatus());
+//				history = repositoryHistory.save(history);
+//				
+//				
+//		return response;
+//	}
 
 }
