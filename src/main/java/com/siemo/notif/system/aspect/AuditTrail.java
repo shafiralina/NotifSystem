@@ -20,8 +20,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.siemo.notif.system.model.CredentialToken;
 import com.siemo.notif.system.repository.RepositoryAuthToken;
 
-
-
 @Aspect
 @Qualifier("auditTrail")
 public class AuditTrail {

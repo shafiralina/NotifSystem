@@ -2,7 +2,10 @@ package com.siemo.notif.system.controller;
 
 
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +30,19 @@ public class ControllerNotif {
 	@Autowired
 	private ServiceNotif serviceNotif;
 	
+	@GetMapping("nodejs")
+	public void credentialUser() {
+	String result = "";
+	HttpClient client = new HttpClient();
+	GetMethod getMethod = new GetMethod("http://localhost:3000/user");
+	try {
+		client.executeMethod(getMethod);
+		result = getMethod.getResponseBodyAsString();
+	} catch (Exception e) {	
+	} finally {
+		getMethod.releaseConnection();
+	}
+	}
 	
 	@PostMapping("/save/device")
 	public BaseResponse saveData(@RequestBody SaveRequest request) {

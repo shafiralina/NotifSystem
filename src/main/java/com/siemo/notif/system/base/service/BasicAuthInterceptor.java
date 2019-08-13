@@ -3,6 +3,11 @@ package com.siemo.notif.system.base.service;
 import java.io.IOException;
 
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
@@ -11,6 +16,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
 public class BasicAuthInterceptor implements ClientHttpRequestInterceptor {
+	
 	private String username;
 	private String password;
 
@@ -28,8 +34,7 @@ public class BasicAuthInterceptor implements ClientHttpRequestInterceptor {
 		headers.set("X-Authorization", "2fced45abfd67f398e8bd2400c46df64"); //REST API BATCH
 		headers.add("User-Agent", "BatchPushSender 1.0");
 		return clientHttpRequestExecution.execute(httpRequest, bytes);
-		//punya shafira c7dea6d74f740f40d95d9a5047eec69f
-		//punya hore 2fced45abfd67f398e8bd2400c46df64
+		
 	}
 	
 	public static String encodeCredentialsForBasicAuth(String username, String password) {
